@@ -35,18 +35,14 @@ import type { Config, Context } from "@netlify/edge-functions";
  * qui.
  *
  * ===========================================================================
- * Cosa NON fa, per adesso
+ * Chi disegna l'immagine
  * ===========================================================================
  *
- * Nella fotografia di Spotify il riquadro contiene anche l'elenco dei primi
- * brani e il logo in basso. Quella non e' una cosa che WhatsApp compone: e'
- * **un'immagine sola**, disegnata da Spotify con dentro copertina, righe e
- * logo, e messa in `og:image`. Per averla uguale serve disegnarla noi allo
- * stesso modo, ed e' il passo dopo.
- *
- * Qui l'immagine e' la copertina della playlist. Il riquadro che ne esce ha
- * gia' copertina grande, nome e autore — cioe' tre quarti di quella fotografia
- * — e soprattutto **esiste**, mentre prima non c'era niente.
+ * Non questo file: `cartolina-della-playlist.ts`, che risponde a
+ * `/cartolina/<id>.png`. Qui si scrive solo il suo indirizzo dentro
+ * `og:image`, perche' i due mestieri sono diversi — questo riscrive una
+ * pagina, quello disegna un PNG — e tenerli separati vuol dire che la pagina
+ * esce comunque anche se il disegnatore ha una brutta giornata.
  */
 
 /** Le lettere che in HTML non possono restare se stesse dentro un attributo. */
@@ -121,10 +117,21 @@ export default async function anteprimaDelLink(richiesta: Request, contesto: Con
     const brani: Brano[] = Array.isArray(corpo?.tracks) ? corpo.tracks : [];
     const nome = String(playlist.playlist_name ?? "Playlist");
     const autore = String(playlist.creator_name ?? "MuslyWave");
-    const copertina =
-      typeof playlist.cover_url === "string" && playlist.cover_url.startsWith("http")
-        ? playlist.cover_url
-        : "https://muslywave.com/anteprima-sito.png";
+
+    /*
+      L'immagine non e' la copertina: e' la cartolina disegnata da
+      `cartolina-della-playlist.ts` — copertina, nome, primi brani e logo in
+      basso a sinistra, tutto dentro un PNG solo.
+
+      Deve essere cosi' perche' WhatsApp da un link prende un titolo, una frase
+      e **un'immagine sola**, e le mette in fila sempre allo stesso modo:
+      l'elenco dei brani e il logo, nel riquadro di Spotify, sono disegnati
+      dentro l'immagine, non composti da WhatsApp.
+
+      Se il disegno fallisce, quell'indirizzo rimanda da solo alla copertina
+      nuda: l'anteprima peggiora, non si rompe.
+    */
+    const cartolina = `https://muslywave.com/cartolina/${encodeURIComponent(id)}.png`;
 
     /*
       La frase sotto al titolo: chi l'ha fatta, quante canzoni, e le prime due.
@@ -158,12 +165,14 @@ export default async function anteprimaDelLink(richiesta: Request, contesto: Con
     <meta property="og:url" content="${pulisci(url)}" />
     <meta property="og:title" content="${pulisci(titolo)}" />
     <meta property="og:description" content="${pulisci(descrizione)}" />
-    <meta property="og:image" content="${pulisci(copertina)}" />
+    <meta property="og:image" content="${pulisci(cartolina)}" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
     <meta property="og:image:alt" content="${pulisci(nome)}" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="${pulisci(titolo)}" />
     <meta name="twitter:description" content="${pulisci(descrizione)}" />
-    <meta name="twitter:image" content="${pulisci(copertina)}" />
+    <meta name="twitter:image" content="${pulisci(cartolina)}" />
 `;
 
     const pagina = togliIVecchi(await risposta.text()).replace(
