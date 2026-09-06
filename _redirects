@@ -1,0 +1,8 @@
+# A share link is a real address on this site, so it must not 404.
+#
+# 200 rather than 301: the address stays https://muslywave.com/playlist/<id>,
+# which is what open.html reads to know what to open, and what iOS needs to see
+# to match it against the app's associated domains.
+/playlist/*  /open.html  200
+/invite/*    /open.html  200
+/amico/*    /open.html  200

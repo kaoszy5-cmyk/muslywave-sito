@@ -1,0 +1,11 @@
+# Apple fetches this file to decide whether muslywave.com is allowed to open
+# the app. It has no extension, so Netlify would serve it as a download; Apple
+# then ignores it and every link keeps opening the browser. The content type is
+# the whole point of this file.
+/.well-known/apple-app-site-association
+  Content-Type: application/json
+  Cache-Control: public, max-age=3600
+
+/apple-app-site-association
+  Content-Type: application/json
+  Cache-Control: public, max-age=3600

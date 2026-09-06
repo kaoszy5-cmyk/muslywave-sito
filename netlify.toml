@@ -1,0 +1,52 @@
+# ===========================================================================
+# Il sito di MuslyWave: pagine gia' fatte, nessuna compilazione
+# ===========================================================================
+#
+# Non c'e' `[build]` apposta. Questa cartella contiene le pagine finite —
+# index, open, privacy, terms — e Netlify le deve solo pubblicare. Un comando
+# di compilazione qui dentro cercherebbe un `package.json` che non esiste e
+# farebbe fallire ogni pubblicazione.
+#
+# (L'app e' un altro progetto, in un'altra cartella. Le due cose si somigliano
+# nel nome e non c'entrano niente: qui non c'e' React, non c'e' Vite, non c'e'
+# niente da costruire.)
+
+# ===========================================================================
+# L'anteprima dei link condivisi
+# ===========================================================================
+#
+# Chiesta con la fotografia di come lo fa Spotify: *"voglio che quando
+# condividi il link di una playlist si mostri come e' nell'app"*. E con il
+# dubbio: *"guarda se con Netlify si puo' fare, se non si puo' togli il dominio
+# e lo mettiamo in un altro sito"*.
+#
+# Si puo'. WhatsApp, Instagram e Telegram non aprono davvero la pagina: mandano
+# un programma che scarica l'HTML, legge i tag `og:` e chiude — e quel programma
+# **non esegue JavaScript**. Quindi `open.html`, che e' un file solo per tutte
+# le playlist, non puo' dire cose diverse per ognuna: qualunque cosa scelga
+# dopo essersi caricata, l'anteprima e' gia' stata letta e chiusa.
+#
+# Una Edge Function sta **davanti** al sito: prende la pagina che sarebbe
+# uscita, ci riscrive dentro i tag giusti — copertina, nome, autore, primi
+# brani — e la manda. Il perche' per esteso sta dentro il file.
+#
+# ATTENZIONE, la sola cosa che manca: le Edge Function girano se il sito viene
+# pubblicato da un repository Git o con la riga di comando di Netlify.
+# Trascinando la cartella nel browser no: quella strada carica i file e basta,
+# senza passare dal costruttore delle funzioni. Finche' si pubblica cosi',
+# questa riga e' innocua e vale l'anteprima fissa scritta in `open.html`.
+[[edge_functions]]
+function = "anteprima-del-link"
+path = "/playlist/*"
+
+# Le immagini che i motori di anteprima vanno a prendere: cambiano quasi mai, e
+# chi le scarica non e' un browser che puo' aspettare.
+[[headers]]
+  for = "/anteprima-sito.png"
+  [headers.values]
+    Cache-Control = "public, max-age=604800, immutable"
+
+[[headers]]
+  for = "/icon.png"
+  [headers.values]
+    Cache-Control = "public, max-age=604800, immutable"

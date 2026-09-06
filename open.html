@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Open in MuslyWave</title>
+<meta name="description" content="Open this shared playlist in the MuslyWave app.">
+<link rel="icon" type="image/png" href="/icon.png">
+
+<!--
+  L'anteprima del link, quella che si vede quando qualcuno lo incolla.
+
+  Senza queste righe WhatsApp, iMessage e Instagram trovano solo la favicon, e
+  disegnano il quadratino da 32 pixel accanto a una riga di indirizzo: un link
+  che sembra rotto. Non eseguono JavaScript, quindi tutto quello che questa
+  pagina decide dopo essersi caricata — playlist o invito, quale playlist — loro
+  non lo vedono mai. Questi valori sono l'unica cosa che leggono.
+
+  Sono volutamente neutri fra "playlist" e "invito", perché lo stesso file
+  risponde per tutti e due e un file statico non può sapere quale dei due sia.
+
+  ---------------------------------------------------------------------------
+  L'immagine adesso è larga, e il perché
+  ---------------------------------------------------------------------------
+
+  Era `icon.png`, cioè il logo quadrato da 1024. Ma il riquadro grande che
+  disegnano WhatsApp e Instagram è 1200x630 — largo quasi il doppio di quanto è
+  alto — e un quadrato lì dentro o viene ritagliato ai lati o galleggia nel
+  vuoto con due bande. `anteprima-sito.png` è disegnata a quella misura.
+
+  ---------------------------------------------------------------------------
+  E la copertina della playlist vera
+  ---------------------------------------------------------------------------
+
+  Chiesta così, con la fotografia di come lo fa Spotify: *"voglio che quando
+  condividi il link di una playlist si mostri come è nell'app"*.
+
+  Questa pagina non può farlo, e non è un limite di Netlify: è che un file
+  statico è **uno solo** per tutte le playlist, e chi legge l'anteprima non
+  esegue il JavaScript che qui dentro sceglie cosa aprire. Serve qualcuno che
+  scriva quei tag mentre la pagina esce — la Edge Function in
+  `netlify/edge-functions/anteprima-del-link.ts`, che sta in questa cartella
+  pronta.
+
+  Gira quando il sito viene pubblicato da un repository Git o con la riga di
+  comando di Netlify; trascinando la cartella dal browser no, perché quella
+  strada carica i file e basta, senza passare dal costruttore delle funzioni.
+  Finché è così vale quello che c'è qui: una scheda con la faccia dell'app, la
+  stessa per tutte le playlist.
+-->
+<meta property="og:type" content="music.playlist">
+<meta property="og:site_name" content="MuslyWave">
+<meta property="og:title" content="Open in MuslyWave">
+<meta property="og:description" content="Tap to open this in the MuslyWave app — halal music, nasheed and Quran recitations.">
+<meta property="og:image" content="https://muslywave.com/anteprima-sito.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="MuslyWave">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Open in MuslyWave">
+<meta name="twitter:description" content="Tap to open this in the MuslyWave app — halal music, nasheed and Quran recitations.">
+<meta name="twitter:image" content="https://muslywave.com/anteprima-sito.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&display=swap" rel="stylesheet">
+<script>
+  // Safari's smart banner is read while the head is parsed, so this has to run
+  // here rather than after the page has rendered. It is a second way into the
+  // app for anyone whose tap did not become a universal link.
+  (function () {
+    var parts = location.pathname.split("/").filter(Boolean);
+    var kind = (parts[0] || "").toLowerCase();
+    var id = parts[1] || "";
+    if ((kind === "playlist" || kind === "invite" || kind === "amico") && id) {
+      var meta = document.createElement("meta");
+      meta.name = "apple-itunes-app";
+      meta.content = "app-id=6777798640, app-argument=" + location.href;
+      document.head.appendChild(meta);
+    }
+  })();
+</script>
+<style>
+  :root{
+    --accent-h:328;
+    --bg:#08070a;
+    --card:rgba(255,255,255,.04);
+    --text:#f8f3f7;
+    --muted:#af9fad;
+    --accent:oklch(.62 .28 var(--accent-h));
+    --accent-soft:oklch(.74 .22 var(--accent-h));
+    --border:oklch(.62 .28 var(--accent-h) / .22);
+    --glow:oklch(.62 .28 var(--accent-h) / .38);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{
+    font-family:"Sora",-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,sans-serif;
+    background:var(--bg);color:var(--text);line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;display:flex;align-items:center;justify-content:center;padding:28px;
+  }
+  .panel{
+    width:100%;max-width:420px;text-align:center;
+    background:var(--card);border:1px solid var(--border);border-radius:28px;
+    padding:36px 26px 30px;box-shadow:0 30px 90px -40px var(--glow);
+  }
+  .icon{
+    width:96px;height:96px;border-radius:24px;object-fit:cover;
+    box-shadow:0 18px 50px -18px var(--glow);
+  }
+  h1{margin-top:20px;font-size:1.5rem;font-weight:800;letter-spacing:-.02em}
+  .kind{
+    display:inline-block;margin-top:10px;padding:5px 12px;border-radius:999px;
+    background:oklch(.62 .28 var(--accent-h) / .16);border:1px solid var(--border);
+    font-size:.72rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-soft);
+  }
+  p{margin-top:14px;color:var(--muted);font-size:.95rem}
+  .open{
+    display:block;margin-top:24px;padding:15px 20px;border:0;border-radius:999px;width:100%;
+    background:var(--accent);color:#fff;font-family:inherit;font-size:1rem;font-weight:700;
+    cursor:pointer;transition:transform .18s ease,filter .18s ease;
+  }
+  .open:hover{transform:translateY(-1px);filter:brightness(1.08)}
+  .store{margin-top:22px;display:none}
+  .store.show{display:block}
+  .store img{height:46px}
+  .store span{display:block;margin-bottom:10px;font-size:.85rem;color:var(--muted)}
+  .home{display:inline-block;margin-top:22px;font-size:.85rem;color:var(--muted);text-decoration:none}
+  .home:hover{color:var(--accent-soft)}
+</style>
+</head>
+<body>
+  <main class="panel">
+    <img class="icon" src="/icon.png" alt="MuslyWave">
+    <h1>Open in MuslyWave</h1>
+    <span class="kind" id="kind">Shared playlist</span>
+    <p id="blurb">This link belongs to the MuslyWave app. Tap the button to open it there.</p>
+
+    <button class="open" id="open" type="button">Open in the app</button>
+
+    <div class="store" id="store">
+      <span>Don't have MuslyWave yet?</span>
+      <a href="https://apps.apple.com/us/app/muslywave/id6777798640" rel="noopener">
+        <img src="https://toolbox.marketingtools.apple.com/api/v2/badges/download-on-the-app-store/black/en-us" alt="Download on the App Store">
+      </a>
+    </div>
+
+    <a class="home" href="/">Back to muslywave.com</a>
+  </main>
+
+<script>
+(function () {
+  var parts = location.pathname.split("/").filter(Boolean);
+  var kind = (parts[0] || "").toLowerCase();
+  var id = (parts[1] || "").trim();
+  var valid = (kind === "playlist" || kind === "invite" || kind === "amico")
+    && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+
+  var openButton = document.getElementById("open");
+  var store = document.getElementById("store");
+
+  if (!valid) {
+    document.getElementById("kind").textContent = "Link not recognised";
+    document.getElementById("blurb").textContent =
+      "This address does not point to a playlist, a friend link or an invite. Open the app from the App Store instead.";
+    openButton.remove();
+    store.classList.add("show");
+    return;
+  }
+
+  document.getElementById("kind").textContent =
+    kind === "playlist" ? "Shared playlist" : kind === "amico" ? "Friend invite" : "Creator invite";
+
+  // The app registers com.muslywave.app:// and muslywave://, so this opens it
+  // even where universal links have not taken over the tap — an in-app browser,
+  // a QR scanner, a link pasted by hand.
+  var appUrl = "com.muslywave.app://" + kind + "/" + id;
+
+  // Deliberately not fired on load: a scheme the device cannot open makes Safari
+  // put up an error alert, and the visitor who does not have the app would get
+  // it before reading anything. It waits for the tap.
+  openButton.addEventListener("click", function () {
+    var left = false;
+    var onHide = function () { if (document.hidden) left = true; };
+    document.addEventListener("visibilitychange", onHide);
+
+    window.location.href = appUrl;
+
+    window.setTimeout(function () {
+      document.removeEventListener("visibilitychange", onHide);
+      // Still here: the app did not take the link, so offer the download.
+      if (!left && !document.hidden) store.classList.add("show");
+    }, 1400);
+  });
+})();
+</script>
+</body>
+</html>

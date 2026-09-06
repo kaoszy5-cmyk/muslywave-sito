@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MuslyWave — 100% Halal Audio Streaming</title>
+<meta name="description" content="MuslyWave is a 100% Halal audio streaming and playlist platform. Safe for families and kids — no inappropriate content, ever.">
+<link rel="icon" type="image/png" href="icon.png">
+<link rel="apple-touch-icon" href="/icon.png">
+
+<!--
+  L'anteprima del link, che qui non c'era proprio.
+
+  =========================================================================
+  Cosa si vedeva prima
+  =========================================================================
+
+  Segnalato cosi': *"il sito non ha piu' l'immagine principale"*. Non era
+  rotta: in questa pagina non c'era **nessun** tag Open Graph. Mandando
+  muslywave.com su WhatsApp usciva l'indirizzo nudo, o al massimo la favicon
+  da 32 pixel accanto a una riga di testo.
+
+  `open.html` — la pagina dei link condivisi — ce li aveva gia'. La pagina
+  principale, che e' quella che si manda piu' spesso, no.
+
+  =========================================================================
+  Perche' un'immagine fatta apposta e non `icon.png`
+  =========================================================================
+
+  Perche' il riquadro grande e' 1200x630, cioe' largo quasi il doppio di
+  quanto e' alto, e un logo quadrato dentro una fessura cosi' o viene
+  ritagliato ai lati o galleggia in mezzo al vuoto. `anteprima-sito.png` e'
+  disegnata a quella misura: logo a sinistra, nome e frase a destra.
+-->
+<link rel="canonical" href="https://muslywave.com/">
+<meta property="og:site_name" content="MuslyWave">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://muslywave.com/">
+<meta property="og:title" content="MuslyWave — 100% Halal Audio Streaming">
+<meta property="og:description" content="Nasheed, Quran, adhkar and focus sounds. Safe for families and kids — no inappropriate content, ever.">
+<meta property="og:image" content="https://muslywave.com/anteprima-sito.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="MuslyWave">
+<meta property="og:locale" content="en_GB">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="MuslyWave — 100% Halal Audio Streaming">
+<meta name="twitter:description" content="Nasheed, Quran, adhkar and focus sounds. Safe for families and kids — no inappropriate content, ever.">
+<meta name="twitter:image" content="https://muslywave.com/anteprima-sito.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --accent-h:328;
+    --logo-size:180px;
+    --bg:#08070a;
+    --bg-soft:#100e14;
+    --card:rgba(255,255,255,.04);
+    --text:#f8f3f7;
+    --muted:#af9fad;
+    --accent:oklch(.62 .28 var(--accent-h));
+    --accent-soft:oklch(.74 .22 var(--accent-h));
+    --border:oklch(.62 .28 var(--accent-h) / .22);
+    --glow:oklch(.62 .28 var(--accent-h) / .38);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth;overflow-x:hidden}
+  body{
+    font-family:"Sora",-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,sans-serif;
+    background:var(--bg);color:var(--text);
+    line-height:1.6;-webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  a{color:var(--accent-soft);text-decoration:none}
+  a:hover{color:var(--accent)}
+  .wrap{max-width:1020px;margin:0 auto;padding:0 24px}
+
+  /* HERO */
+  .hero{
+    position:relative;text-align:center;
+    padding:110px 0 100px;
+    background:
+      radial-gradient(720px 460px at 50% -120px, var(--glow), transparent 70%),
+      var(--bg);
+  }
+  .hero::after{
+    content:"";position:absolute;inset:auto 0 0 0;height:140px;
+    background:linear-gradient(to bottom,transparent,var(--bg-soft));
+    pointer-events:none;
+  }
+  .orb{position:absolute;border-radius:50%;filter:blur(70px);opacity:.35;pointer-events:none;background:var(--accent)}
+  .orb.a{width:280px;height:280px;top:8%;left:-90px;animation:drift 14s ease-in-out infinite alternate}
+  .orb.b{width:220px;height:220px;top:40%;right:-70px;opacity:.22;animation:drift 18s ease-in-out infinite alternate-reverse}
+  @keyframes drift{from{transform:translateY(-24px)}to{transform:translateY(28px)}}
+
+  .logo-ring{
+    position:relative;width:calc(var(--logo-size) + 44px);height:calc(var(--logo-size) + 44px);
+    margin:0 auto 36px;display:flex;align-items:center;justify-content:center;
+  }
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .hero img.app-icon{
+    width:var(--logo-size);height:var(--logo-size);
+    filter:drop-shadow(0 0 40px var(--glow)) drop-shadow(0 18px 30px rgba(0,0,0,.35));
+    animation:floaty 6s ease-in-out infinite;
+  }
+  @keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+
+  .hero h1{
+    font-size:clamp(2.3rem,6.5vw,4rem);
+    font-weight:800;letter-spacing:-.03em;line-height:1.08;
+  }
+  .hero h1 .brand{
+    background:linear-gradient(100deg,var(--accent) 10%,var(--accent-soft) 55%,var(--accent) 95%);
+    background-size:200% 100%;
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    animation:shine 6s linear infinite;
+  }
+  @keyframes shine{to{background-position:200% 0}}
+  .hero p.tagline{
+    max-width:600px;margin:22px auto 0;
+    font-size:clamp(1.05rem,2.5vw,1.3rem);color:var(--muted);
+    text-wrap:pretty;font-weight:400;
+  }
+  .eq{display:flex;gap:5px;justify-content:center;align-items:flex-end;height:34px;margin-top:38px}
+  .eq span{width:4px;border-radius:2px;background:var(--accent);animation:eq 1.1s ease-in-out infinite}
+  .eq span:nth-child(2){animation-delay:.15s}.eq span:nth-child(3){animation-delay:.3s}
+  .eq span:nth-child(4){animation-delay:.45s}.eq span:nth-child(5){animation-delay:.6s}
+  .eq span:nth-child(6){animation-delay:.75s}.eq span:nth-child(7){animation-delay:.9s}
+  @keyframes eq{0%,100%{height:8px}50%{height:32px}}
+
+  .badge-wrap{margin-top:34px}
+  .badge-wrap img{height:64px;transition:transform .2s ease,filter .2s ease}
+  .badge-wrap a:hover img{transform:scale(1.05);filter:drop-shadow(0 6px 24px var(--glow))}
+
+  /* FEATURES */
+  .features{padding:80px 0 96px;background:var(--bg-soft)}
+  .features h2{
+    text-align:center;font-size:clamp(1.5rem,4vw,2.1rem);
+    font-weight:800;letter-spacing:-.02em;margin-bottom:14px;
+  }
+  .features p.sub{text-align:center;color:var(--muted);margin-bottom:48px}
+  .grid{
+    display:grid;gap:22px;
+    grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+  }
+  .card{
+    position:relative;
+    background:var(--card);border:1px solid var(--border);
+    border-radius:20px;padding:34px 28px;
+    backdrop-filter:blur(8px);
+    transition:transform .25s ease,border-color .25s ease,box-shadow .25s ease;
+  }
+  .card:hover{
+    transform:translateY(-6px);
+    border-color:var(--accent);
+    box-shadow:0 18px 44px var(--glow);
+  }
+  .card .dot{
+    width:48px;height:48px;border-radius:14px;
+    background:linear-gradient(135deg,var(--accent),var(--accent-soft));
+    display:flex;align-items:center;justify-content:center;margin-bottom:20px;
+    box-shadow:0 8px 22px var(--glow);
+  }
+  .card .dot svg{width:22px;height:22px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  .card h3{font-size:1.12rem;font-weight:700;margin-bottom:8px}
+  .card p{font-size:.94rem;color:var(--muted)}
+
+  /* CTA */
+  .cta{position:relative;text-align:center;padding:100px 0;overflow:hidden}
+  .cta::before{
+    content:"";position:absolute;inset:0;
+    background:radial-gradient(560px 320px at 50% 110%, var(--glow), transparent 70%);
+    pointer-events:none;
+  }
+  .cta h2{font-size:clamp(1.7rem,5vw,2.6rem);font-weight:800;letter-spacing:-.02em}
+  .cta p{color:var(--muted);margin:14px auto 40px;max-width:480px}
+
+  /* FOOTER */
+  footer{
+    border-top:1px solid var(--border);
+    padding:34px 0;font-size:.9rem;color:var(--muted);
+  }
+  footer .wrap{
+    display:flex;flex-wrap:wrap;gap:12px 28px;
+    align-items:center;justify-content:space-between;
+  }
+  footer nav{display:flex;gap:26px}
+
+  /* Scroll reveal */
+  .reveal{opacity:0;transform:translateY(26px);transition:opacity .7s ease,transform .7s ease}
+  .reveal.in{opacity:1;transform:none}
+  @media (prefers-reduced-motion: reduce){
+    .orb,.eq span,.hero img.app-icon,.hero h1 .brand{animation:none}
+    .reveal{opacity:1;transform:none;transition:none}
+  }
+
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="orb a"></div><div class="orb b"></div>
+  <div class="wrap">
+    <div class="logo-ring" style="overflow:hidden;flex-wrap:wrap-reverse">
+      <!-- Replace icon.png with your real app icon (1024x1024 PNG works fine) -->
+      <img class="app-icon" src="icon.png" alt="MuslyWave app icon">
+    </div>
+    <h1><span class="brand">MuslyWave</span><br>Halal sound. Pure heart.</h1>
+    <p class="tagline">100% Halal audio streaming and playlist platform, made for<br>Muslims, perfect for families and kids.</p>
+    <div class="eq" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+    <div class="badge-wrap">
+      <!-- Replace the href with your app's direct App Store link when live -->
+      <a href="https://apps.apple.com/us/app/muslywave/id6777798640" target="_blank" rel="noopener">
+        <img src="https://toolbox.marketingtools.apple.com/api/v2/badges/download-on-the-app-store/black/en-us" alt="Download on the App Store">
+      </a>
+    </div>
+  </div>
+</header>
+
+<section class="features">
+  <div class="wrap">
+    <h2 class="reveal">Listening you can trust</h2>
+    <p class="sub reveal">Curated with care, built with faith.</p>
+    <div class="grid">
+      <div class="card reveal">
+        <div class="dot"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"></path></svg></div>
+        <h3>100% Halal</h3>
+        <p>Every track is curated to respect Islamic values. Nothing slips through.<br>No music, only halal audios.</p>
+      </div>
+      <div class="card reveal">
+        <div class="dot"><svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg></div>
+        <h3>Playlists &amp; streaming</h3>
+        <p>Build your own playlists and stream beautiful audio anywhere, anytime.</p>
+      </div>
+      <div class="card reveal">
+        <div class="dot"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path d="M12 6v6l4 2"></path></svg></div>
+        <h3>Simple &amp; fast</h3>
+        <p>A clean, distraction-free experience designed to get you listening in seconds.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cta">
+  <div class="wrap">
+    <h2 class="reveal">Start listening today</h2>
+    <p class="reveal">Join a community that streams with faith. Free on the App Store.</p>
+    <div class="badge-wrap reveal">
+      <a href="https://apps.apple.com/us/app/muslywave/id6777798640" target="_blank" rel="noopener">
+        <img src="https://toolbox.marketingtools.apple.com/api/v2/badges/download-on-the-app-store/black/en-us" alt="Download on the App Store">
+      </a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 MuslyWave. All rights reserved.</span>
+    <nav>
+      <a href="mailto:muslywave@gmail.com">Contact us</a>
+      <a href="https://docs.google.com/document/d/1-Iv9IQvruwkRIEYTP8MLdd05Zee7TfEOq11DpwFanTU/edit?tab=t.0" target="_blank" rel="noopener">Privacy Policy</a>
+    </nav>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.15});
+  document.querySelectorAll('.reveal').forEach(function(el){io.observe(el);});
+})();
+</script>
+
+</body>
+</html>

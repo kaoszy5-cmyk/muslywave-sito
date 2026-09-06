@@ -1,0 +1,30 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": [
+          "N7VVQ8U5Y2.com.muslywave.app"
+        ],
+        "components": [
+          {
+            "/": "/playlist/*",
+            "comment": "A shared playlist opens in MuslyWave."
+          },
+          {
+            "/": "/invite/*",
+            "comment": "A creator invite opens in MuslyWave."
+          },
+          {
+            "/": "/amico/*",
+            "comment": "A friend link opens in MuslyWave."
+          }
+        ]
+      }
+    ]
+  },
+  "webcredentials": {
+    "apps": [
+      "N7VVQ8U5Y2.com.muslywave.app"
+    ]
+  }
+}
