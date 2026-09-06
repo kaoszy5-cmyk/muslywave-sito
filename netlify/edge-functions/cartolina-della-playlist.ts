@@ -122,40 +122,112 @@ const COLONNA = { x: 528, larghezza: 1200 - 528 - 64 };
   identificativo: cosi' la stessa playlist ha sempre la stessa cartolina, e due
   playlist vicine non escono uguali.
 */
-const TEMI = [
-  ["#f044c7", "#7c3aed"],
-  ["#20e3f0", "#2563eb"],
-  ["#fbccf8", "#8b5cf6"],
-  ["#39FF14", "#00b3a4"],
-  ["#FF007F", "#2b6bff"],
-  ["#98FF98", "#3ec7a0"],
-  ["#ffb347", "#ff5e62"],
-  ["#c4b5fd", "#4338ca"],
-  ["#ff9a9e", "#a855f7"],
-  ["#7dd3fc", "#0ea5e9"],
-];
+/*
+  Il colore di una cartolina viene dalla categoria della playlist.
 
-function temaPer(id) {
-  let somma = 0;
-  for (let i = 0; i < id.length; i += 1) somma = (somma * 31 + id.charCodeAt(i)) >>> 0;
-  return TEMI[somma % TEMI.length];
+  ===========================================================================
+  Perche' non a caso, e perche' non dal tema
+  ===========================================================================
+
+  Prima lo sceglieva un numero ricavato dall'identificativo: sempre lo stesso
+  per la stessa playlist, ma senza nessun rapporto con cosa c'era dentro. Due
+  playlist di Corano uscivano una rossa e una verde.
+
+  Segnalato cosi': *"i colori di sfondo delle playlist prendili dai colori delle
+  categorie, quindi Quran ha il violetto chiaro, Islamic Tales rosa, Sleep blu,
+  Deep Focus giallo, Gym/Fitness rosso"*.
+
+  Questi sono esattamente quei numeri: la tabella e' copiata da
+  `categoryTintById` in `routes/search.tsx`, cioe' le tinte con cui l'app
+  disegna le dieci categorie. Chi apre il link vede lo stesso colore che vedra'
+  un secondo dopo dentro l'app — che e' l'unica cosa che rende un'anteprima
+  un'anteprima invece di una figura.
+
+  ===========================================================================
+  La copia, e perche' e' voluta
+  ===========================================================================
+
+  Questa tabella vive due volte: qui e nell'app. Non e' distrazione — sono due
+  cose che si pubblicano separatamente, il sito da un repository e l'app dallo
+  store, e un file condiviso fra i due non esiste. La copia e' dichiarata qui
+  perche' chi tocca uno dei due sappia dell'altro; il secondo colore di ogni
+  coppia sta solo qui, perche' serve solo a questa sfumatura.
+*/
+const TINTE_CATEGORIA = {
+  gym_fitness: ["#EF4444", "#7f1d1d"],
+  sleep: ["#6366F1", "#1e1b4b"],
+  focus: ["#F59E0B", "#78350f"],
+  adhkar: ["#10B981", "#064e3b"],
+  friday_surahs: ["#0EA5E9", "#0c4a6e"],
+  podcast: ["#F97316", "#7c2d12"],
+  knowledge: ["#A855F7", "#4c1d95"],
+  islamic_tales: ["#EC4899", "#831843"],
+  nasheed: ["#14B8A6", "#134e4a"],
+  quran: ["#8B5CF6", "#4c1d95"],
+};
+
+/*
+  E quando una categoria non c'e', i colori sono quelli di MuslyWave.
+
+  Chiesto cosi': *"quelli della community invece li fai dei colori di MuslyWave,
+  quindi come il sito: il colore principale della png"*. Sono presi davvero da
+  li' — le due tinte piu' presenti dentro `icon.png`, il magenta acceso del
+  segno e il rosa scuro della sua ombra.
+
+  Ed e' la scelta giusta anche per il motivo per cui e' stata chiesta: una
+  playlist della community non appartiene a una categoria, appartiene
+  all'app. Darle il colore di una categoria vorrebbe dire dire una cosa falsa
+  sul suo contenuto; darle il colore dell'app dice esattamente quello che e'.
+*/
+const TINTE_MUSLYWAVE = ["#ee0de3", "#ac1d67"];
+
+function tinteDi(categoria) {
+  const chiave = String(categoria ?? "").trim().toLowerCase();
+  return TINTE_CATEGORIA[chiave] ?? TINTE_MUSLYWAVE;
+}
+
+/**
+ * Il sigillo della verifica: il tondo dentellato di Instagram e X, non un
+ * cerchio.
+ *
+ * Chiesto cosi': *"il verificato non farlo a cerchio ma la classica roba
+ * spigolosa di Instagram ecc"*. Ed e' la forma giusta per la ragione per cui
+ * esiste: un tondo liscio con dentro un segno somiglia a un tasto, a una
+ * notifica, a mille altre cose. Quella dentellata non somiglia a niente tranne
+ * che a se stessa — e' un sigillo, e si legge come un sigillo anche a
+ * venticinque punti in mezzo a un nome.
+ *
+ * Dodici punte, quelle di X: sei sarebbe una stella, venti tornerebbe un
+ * cerchio. Il raggio interno all'85% perche' la dentellatura si veda senza che
+ * le punte diventino spine, e le punte si arrotondano con un filo dello stesso
+ * colore invece che con raccordi disegnati a mano.
+ */
+function sigillo(cx, cy, raggio) {
+  const punte = 12;
+  const dentro = raggio * 0.855;
+  const angoli = [];
+  for (let i = 0; i < punte * 2; i += 1) {
+    const r = i % 2 === 0 ? raggio : dentro;
+    const angolo = (Math.PI / punte) * i - Math.PI / 2;
+    angoli.push(`${(cx + Math.cos(angolo) * r).toFixed(2)} ${(cy + Math.sin(angolo) * r).toFixed(2)}`);
+  }
+  return `M${angoli.join(" L")} Z`;
 }
 
 /**
  * Riporta un testo a lettere che i font sanno disegnare.
  *
  * Nasce da un titolo vero, trovato in una playlist di prova:
- * "Darbuna Darbun ( 𝕊𝕝𝕠𝕨𝕖𝕕 + ℝ𝕖𝕧𝕖𝕣𝕓 )". Quelle non sono lettere normali in
- * grassetto: sono i "simboli matematici alfanumerici", caratteri diversi con
- * un posto diverso nella tavola di Unicode. Un font che non li ha non li
- * inventa: al loro posto stampa il rettangolo vuoto, e nella cartolina si
- * vedeva una fila di scatolette.
+ * "Darbuna Darbun ( \u{1D54A}\u{1D55D}\u{1D560}\u{1D568}\u{1D556}\u{1D555} )". Quelle non sono lettere normali in
+ * grassetto: sono i "simboli matematici alfanumerici", caratteri diversi con un
+ * posto diverso nella tavola di Unicode. Un font che non li ha non li inventa:
+ * al loro posto stampa il rettangolo vuoto, e nella cartolina si vedeva una
+ * fila di scatolette.
  *
- * `NFKC` li riporta alle lettere che imitano — 𝕊 torna S — e cosi' il titolo
- * si legge invece di sparire. Quello che resta fuori dal font anche dopo
- * (un'emoji, un alfabeto che non e' il nostro) si toglie: uno spazio dice meno
- * di una parola, ma un rettangolo vuoto dice il falso, cioe' che l'app e'
- * rotta.
+ * `NFKC` li riporta alle lettere che imitano, e cosi' il titolo si legge invece
+ * di sparire. Quello che resta fuori dal font anche dopo (un'emoji, un alfabeto
+ * che non e' il nostro) si toglie: uno spazio dice meno di una parola, ma un
+ * rettangolo vuoto dice il falso, cioe' che l'app e' rotta.
  *
  * Se togliendo non resta niente — un titolo tutto in arabo, per dire — si
  * rimette com'era: meglio qualcosa che non si legge di una riga bianca con
@@ -171,34 +243,6 @@ function ripulisci(testo, tabella) {
   }
   const pulito = tenuto.replace(/\s+/g, " ").trim();
   return pulito || grezzo;
-}
-
-/**
- * Il sigillo della verifica: il tondo dentellato di Instagram e X, non un
- * cerchio.
-
- * Chiesto cosi': *"il verificato non farlo a cerchio ma la classica roba
- * spigolosa di Instagram ecc"*. Ed e' la forma giusta per la ragione per cui
- * esiste: un tondo liscio con dentro un segno somiglia a un tasto, a una
- * notifica, a mille altre cose. Quella dentellata non somiglia a niente
- * tranne che a se stessa — e' un sigillo, e si legge come un sigillo anche a
- * venticinque punti in mezzo a un nome.
- *
- * Dodici punte, quelle di X: sei sarebbe una stella, venti tornerebbe un
- * cerchio. Il raggio interno all'85% del suo perche' la dentellatura si veda
- * senza che le punte diventino spine, e le punte si arrotondano con un filo
- * dello stesso colore invece che con dei raccordi disegnati a mano.
- */
-function sigillo(cx, cy, raggio) {
-  const punte = 12;
-  const dentro = raggio * 0.855;
-  const angoli = [];
-  for (let i = 0; i < punte * 2; i += 1) {
-    const r = i % 2 === 0 ? raggio : dentro;
-    const angolo = (Math.PI / punte) * i - Math.PI / 2;
-    angoli.push(`${(cx + Math.cos(angolo) * r).toFixed(2)} ${(cy + Math.sin(angolo) * r).toFixed(2)}`);
-  }
-  return `M${angoli.join(" L")} Z`;
 }
 
 /** Le lettere che dentro un file XML non possono restare se stesse. */
@@ -615,7 +659,7 @@ export default async function cartolinaDellaPlaylist(richiesta: Request, contest
       brani: elenco.map((brano) => ({ titolo: String(brano?.title ?? "").trim() })).filter((b) => b.titolo),
       copertina,
       logo,
-      tema: temaPer(id),
+      tema: tinteDi(playlist.category),
       larghezze: LARGHEZZE,
     });
 

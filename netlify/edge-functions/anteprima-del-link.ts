@@ -69,21 +69,162 @@ function togliIVecchi(html: string): string {
   );
 }
 
-type Brano = { title?: string | null; artist?: string | null };
+type Brano = { title?: string | null };
+
+/** Le tre cose che un motore di anteprima sa mostrare, gia' pronte. */
+type Anteprima = { titolo: string; descrizione: string; immagine: string; tipo: string };
+
+/**
+ * Chiede al database, con la chiave pubblica e un tempo massimo.
+ *
+ * Sono funzioni `security definer` concesse ad `anon`: rispondono solo per
+ * quello che e' davvero pubblico. Il controllo di chi puo' vedere cosa resta
+ * uno solo, nel database, e non ne nasce un secondo qui dentro.
+ */
+async function chiedi(
+  base: string,
+  chiave: string,
+  funzione: string,
+  argomenti: Record<string, string>,
+): Promise<Record<string, unknown> | null> {
+  const risposta = await fetch(`${base}/rest/v1/rpc/${funzione}`, {
+    method: "POST",
+    headers: {
+      apikey: chiave,
+      Authorization: `Bearer ${chiave}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(argomenti),
+    signal: AbortSignal.timeout(2500),
+  });
+  if (!risposta.ok) return null;
+  return (await risposta.json()) ?? null;
+}
+
+/**
+ * L'anteprima di una playlist: la cartolina disegnata.
+ *
+ * L'immagine non e' la copertina: e' il PNG 1200x630 costruito da
+ * `cartolina-della-playlist.ts`, con dentro copertina, nome, primi brani e
+ * logo. Deve essere disegnata perche' WhatsApp da un link prende **tre** cose —
+ * un titolo, una frase e un'immagine sola — e l'elenco dei brani, nel riquadro
+ * di Spotify, sta dentro l'immagine.
+ */
+async function anteprimaDiUnaPlaylist(
+  base: string,
+  chiave: string,
+  id: string,
+): Promise<Anteprima | null> {
+  const corpo = await chiedi(base, chiave, "get_shared_playlist", { p_playlist_id: id });
+  const playlist = corpo?.playlist as Record<string, unknown> | undefined;
+  if (!playlist) return null;
+
+  const brani: Brano[] = Array.isArray(corpo?.tracks) ? (corpo!.tracks as Brano[]) : [];
+  const nome = String(playlist.playlist_name ?? "Playlist");
+  const autore = String(playlist.creator_name ?? "MuslyWave");
+  const quante = brani.length;
+  const primi = brani
+    .slice(0, 2)
+    .map((brano) => String(brano?.title ?? "").trim())
+    .filter(Boolean)
+    .join(" · ");
+
+  /*
+    "Playlist by ..." solo quando c'e' davvero un qualcuno.
+
+    Le playlist del catalogo hanno `type = 'admin'`: le pubblica chi amministra
+    l'app, e il suo nome non c'entra niente con loro. Chiesto cosi': *"quello
+    sono io che li ho pubblicati e non devo uscire da nessuna parte"*.
+  */
+  const dellApp = String(playlist.type ?? "") === "admin";
+
+  return {
+    tipo: "music.playlist",
+    titolo: `${nome} — MuslyWave`,
+    descrizione: [
+      dellApp ? "" : `Playlist by ${autore}`,
+      quante ? `${quante} ${quante === 1 ? "track" : "tracks"}` : "",
+      primi,
+    ]
+      .filter(Boolean)
+      .join(" · "),
+    immagine: `https://muslywave.com/cartolina/${encodeURIComponent(id)}.png`,
+  };
+}
+
+/**
+ * L'anteprima di un brano singolo: la copertina, e basta.
+ *
+ * ===========================================================================
+ * Perche' qui **non** si disegna niente
+ * ===========================================================================
+ *
+ * Per le playlist si disegna una cartolina larga. Per un brano no, ed e' una
+ * differenza voluta, mostrata con la fotografia di come lo fa Spotify: *"per i
+ * brani singoli non mettere neanche il colore, metti direttamente la foto della
+ * canzone e basta, piu' grande"*.
+ *
+ * E ha ragione lui e ha ragione Spotify. Una playlist ha qualcosa da
+ * **elencare** — quattro titoli che dicono cosa c'e' dentro — e quell'elenco
+ * puo' stare solo dentro un'immagine disegnata. Un brano non ha niente da
+ * elencare: ha una copertina, che e' gia' la cosa che lo racconta. Disegnarci
+ * intorno un riquadro colorato vorrebbe dire rimpicciolire l'unica cosa che
+ * conta per far posto a delle decorazioni.
+ *
+ * Quadrata e grande, quindi: WhatsApp e Instagram con un'immagine quadrata
+ * abbastanza grande fanno il riquadro alto, con la copertina sopra e sotto
+ * titolo, artista e dominio — che e' esattamente la fotografia mandata.
+ *
+ * Il logo accanto a "muslywave.com", in quel riquadro, non e' una cosa che si
+ * mette qui: e' la **favicon** del sito, e sta dichiarata in `index.html` e in
+ * `open.html`.
+ */
+async function anteprimaDiUnBrano(
+  base: string,
+  chiave: string,
+  id: string,
+): Promise<Anteprima | null> {
+  const brano = await chiedi(base, chiave, "get_shared_track", { p_track_id: id });
+  if (!brano) return null;
+
+  const titolo = String(brano.title ?? "").trim() || "Track";
+  /*
+    Chi c'e' sotto al titolo. Per un brano del catalogo e' l'artista scritto sul
+    brano; per uno caricato e' la persona che l'ha caricato — che e' il nome del
+    profilo vero, non la casella scritta a mano, per la stessa ragione per cui
+    l'app mostra quello (vedi `nomeDiChiCanta`).
+  */
+  const chi =
+    String(brano.creator_name ?? "").trim() || String(brano.artist ?? "").trim();
+
+  const copertina =
+    typeof brano.cover_url === "string" && brano.cover_url.startsWith("http")
+      ? brano.cover_url
+      : "https://muslywave.com/anteprima-sito.png";
+
+  return {
+    tipo: "music.song",
+    titolo: `${titolo} — MuslyWave`,
+    descrizione: [chi, "Song"].filter(Boolean).join(" · "),
+    immagine: copertina,
+  };
+}
 
 export default async function anteprimaDelLink(richiesta: Request, contesto: Context) {
   const risposta = await contesto.next();
 
   /*
-    Solo le pagine vere. Se quello che sta uscendo non e' HTML — un'immagine,
-    un foglio di stile, un file di dati — non c'e' niente da riscrivere, e
-    provarci vorrebbe dire rovinarlo.
+    Solo le pagine vere. Se quello che sta uscendo non e' HTML — un'immagine, un
+    foglio di stile, un file di dati — non c'e' niente da riscrivere, e provarci
+    vorrebbe dire rovinarlo.
   */
-  const tipo = risposta.headers.get("content-type") ?? "";
-  if (!tipo.includes("text/html")) return risposta;
+  const tipoRisposta = risposta.headers.get("content-type") ?? "";
+  if (!tipoRisposta.includes("text/html")) return risposta;
 
   const indirizzo = new URL(richiesta.url);
-  const id = indirizzo.pathname.split("/").filter(Boolean)[1];
+  const pezzi = indirizzo.pathname.split("/").filter(Boolean);
+  const cosa = pezzi[0];
+  const id = pezzi[1];
   if (!id) return risposta;
 
   const base = Deno.env.get("VITE_SUPABASE_URL") ?? Deno.env.get("SUPABASE_URL");
@@ -91,104 +232,41 @@ export default async function anteprimaDelLink(richiesta: Request, contesto: Con
   if (!base || !chiave) return risposta;
 
   try {
+    const dati =
+      cosa === "brano"
+        ? await anteprimaDiUnBrano(base, chiave, id)
+        : await anteprimaDiUnaPlaylist(base, chiave, id);
+    if (!dati) return risposta;
+
+    const url = `https://muslywave.com/${cosa}/${id}`;
     /*
-      La stessa funzione che chiama l'app: `get_shared_playlist`. E' `security
-      definer` e concessa ad `anon`, quindi risponde solo per le playlist che
-      sono davvero pubbliche — una playlist privata da qui non esce, esattamente
-      come non esce dall'app. Il controllo di chi puo' vedere cosa resta uno
-      solo, nel database, e non ne nasce un secondo qui dentro.
+      Le misure si dichiarano solo per la cartolina, che e' sempre 1200x630. La
+      copertina di un brano e' quadrata ma non si sa quanto: dichiarare misure
+      sbagliate e' peggio che non dichiararne — chi legge l'anteprima si fida di
+      quello che c'e' scritto e lascia un buco della forma sbagliata.
     */
-    const dati = await fetch(`${base}/rest/v1/rpc/get_shared_playlist`, {
-      method: "POST",
-      headers: {
-        apikey: chiave,
-        Authorization: `Bearer ${chiave}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ p_playlist_id: id }),
-      signal: AbortSignal.timeout(2500),
-    });
-    if (!dati.ok) return risposta;
-
-    const corpo = await dati.json();
-    const playlist = corpo?.playlist;
-    if (!playlist) return risposta;
-
-    const brani: Brano[] = Array.isArray(corpo?.tracks) ? corpo.tracks : [];
-    const nome = String(playlist.playlist_name ?? "Playlist");
-    const autore = String(playlist.creator_name ?? "MuslyWave");
-
-    /*
-      L'immagine non e' la copertina: e' la cartolina disegnata da
-      `cartolina-della-playlist.ts` — copertina, nome, primi brani e logo in
-      basso a sinistra, tutto dentro un PNG solo.
-
-      Deve essere cosi' perche' WhatsApp da un link prende un titolo, una frase
-      e **un'immagine sola**, e le mette in fila sempre allo stesso modo:
-      l'elenco dei brani e il logo, nel riquadro di Spotify, sono disegnati
-      dentro l'immagine, non composti da WhatsApp.
-
-      Se il disegno fallisce, quell'indirizzo rimanda da solo alla copertina
-      nuda: l'anteprima peggiora, non si rompe.
-    */
-    const cartolina = `https://muslywave.com/cartolina/${encodeURIComponent(id)}.png`;
-
-    /*
-      La frase sotto al titolo: chi l'ha fatta, quante canzoni, e le prime due.
-
-      Le prime due ci sono per la stessa ragione per cui ci sono nel riquadro di
-      Spotify: "Playlist di Eraldo" dice chi, non dice **cosa**. Due titoli lo
-      dicono in dieci parole, e sono la sola parte che fa venire voglia di
-      aprirla.
-    */
-    const quante = brani.length;
-    const primi = brani
-      .slice(0, 2)
-      .map((brano) => String(brano?.title ?? "").trim())
-      .filter(Boolean)
-      .join(" · ");
-    /*
-      "Playlist by ..." solo quando c'e' davvero un qualcuno.
-
-      Le playlist del catalogo hanno `type = 'admin'`: le pubblica chi
-      amministra l'app, e il suo nome non c'entra niente con loro. Chiesto
-      cosi': *"quello sono io che li ho pubblicati e non devo uscire da nessuna
-      parte"*. Il nome esce solo dalle playlist delle persone — dove e' meta'
-      del motivo per cui si apre il link.
-    */
-    const dellApp = String(playlist.type ?? "") === "admin";
-    const descrizione = [
-      dellApp ? "" : `Playlist by ${autore}`,
-      quante ? `${quante} ${quante === 1 ? "track" : "tracks"}` : "",
-      primi,
-    ]
-      .filter(Boolean)
-      .join(" · ");
-
-    const titolo = `${nome} — MuslyWave`;
-    const url = `https://muslywave.com/playlist/${id}`;
+    const misure =
+      cosa === "brano"
+        ? ""
+        : `\n    <meta property="og:image:width" content="1200" />\n    <meta property="og:image:height" content="630" />`;
+    const scheda = cosa === "brano" ? "summary_large_image" : "summary_large_image";
 
     const tag = `
     <link rel="canonical" href="${pulisci(url)}" />
     <meta property="og:site_name" content="MuslyWave" />
-    <meta property="og:type" content="music.playlist" />
+    <meta property="og:type" content="${pulisci(dati.tipo)}" />
     <meta property="og:url" content="${pulisci(url)}" />
-    <meta property="og:title" content="${pulisci(titolo)}" />
-    <meta property="og:description" content="${pulisci(descrizione)}" />
-    <meta property="og:image" content="${pulisci(cartolina)}" />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content="${pulisci(nome)}" />
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="${pulisci(titolo)}" />
-    <meta name="twitter:description" content="${pulisci(descrizione)}" />
-    <meta name="twitter:image" content="${pulisci(cartolina)}" />
+    <meta property="og:title" content="${pulisci(dati.titolo)}" />
+    <meta property="og:description" content="${pulisci(dati.descrizione)}" />
+    <meta property="og:image" content="${pulisci(dati.immagine)}" />${misure}
+    <meta property="og:image:alt" content="${pulisci(dati.titolo)}" />
+    <meta name="twitter:card" content="${scheda}" />
+    <meta name="twitter:title" content="${pulisci(dati.titolo)}" />
+    <meta name="twitter:description" content="${pulisci(dati.descrizione)}" />
+    <meta name="twitter:image" content="${pulisci(dati.immagine)}" />
 `;
 
-    const pagina = togliIVecchi(await risposta.text()).replace(
-      "</head>",
-      `${tag}  </head>`,
-    );
+    const pagina = togliIVecchi(await risposta.text()).replace("</head>", `${tag}  </head>`);
 
     return new Response(pagina, {
       status: risposta.status,
@@ -196,8 +274,8 @@ export default async function anteprimaDelLink(richiesta: Request, contesto: Con
         ...Object.fromEntries(risposta.headers),
         "content-type": "text/html; charset=utf-8",
         /*
-          Un'ora nella cache di Netlify, e nessuna nel browser di chi la apre.
-          I motori di anteprima ripassano di rado; la persona che tocca il link
+          Un'ora nella cache di Netlify, e nessuna nel browser di chi la apre. I
+          motori di anteprima ripassano di rado; la persona che tocca il link
           deve vedere l'app aggiornata.
         */
         "cache-control": "public, max-age=0, must-revalidate",
@@ -216,5 +294,5 @@ export default async function anteprimaDelLink(richiesta: Request, contesto: Con
 }
 
 export const config: Config = {
-  path: "/playlist/*",
+  path: ["/playlist/*", "/brano/*"],
 };
