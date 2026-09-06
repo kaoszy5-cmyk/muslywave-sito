@@ -39,6 +39,14 @@
 function = "anteprima-del-link"
 path = "/playlist/*"
 
+# La cartolina: il PNG 1200x630 con copertina, nome, primi brani e logo, che
+# `anteprima-del-link` mette in `og:image`. E' un indirizzo suo, e non una
+# pagina, perche' chi lo chiede non e' una persona ma il motore di anteprima di
+# WhatsApp o di Instagram, che vuole un'immagine e basta.
+[[edge_functions]]
+function = "cartolina-della-playlist"
+path = "/cartolina/*"
+
 # Le immagini che i motori di anteprima vanno a prendere: cambiano quasi mai, e
 # chi le scarica non e' un browser che puo' aspettare.
 [[headers]]
@@ -48,5 +56,13 @@ path = "/playlist/*"
 
 [[headers]]
   for = "/icon.png"
+  [headers.values]
+    Cache-Control = "public, max-age=604800, immutable"
+
+# I pezzi con cui si disegna la cartolina: i due font, il logo e il
+# rasterizzatore. Non cambiano mai, e la Edge Function li prende una volta per
+# macchina — non a ogni anteprima.
+[[headers]]
+  for = "/risorse/*"
   [headers.values]
     Cache-Control = "public, max-age=604800, immutable"
