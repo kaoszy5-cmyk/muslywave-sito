@@ -46,63 +46,13 @@ import { initWasm, Resvg } from "https://esm.sh/@resvg/resvg-wasm@2.6.2";
  * un link che nessuno apre.
  */
 
-/* Le larghezze vere dei caratteri nei due font, in frazioni di em. */
-const LARGHEZZE = {"display":{"predefinita":0.612,"larghezze":{"32":0.254,"33":0.298,"34":0.514,"35":0.636,"36":0.606,"37":0.758,"38":0.591,"39":0.294,"40":0.398,"41":0.39,"42":0.54,"43":0.62,"44":0.294,"45":0.432,"46":0.298,"47":0.388,"48":0.648,"49":0.452,"50":0.594,"51":0.608,"52":0.636,"53":0.6,"54":0.618,"55":0.554,"56":0.6,"57":0.618,"58":0.298,"59":0.298,"60":0.62,"61":0.62,"62":0.62,"63":0.578,"64":1.014,"65":0.634,"66":0.664,"67":0.644,"68":0.666,"69":0.554,"70":0.534,"71":0.662,"72":0.656,"73":0.264,"74":0.61,"75":0.626,"76":0.542,"77":0.882,"78":0.67,"79":0.676,"80":0.604,"81":0.676,"82":0.632,"83":0.606,"84":0.588,"85":0.672,"86":0.618,"87":0.898,"88":0.644,"89":0.624,"90":0.576,"91":0.358,"92":0.388,"93":0.358,"94":0.62,"95":0.62,"96":0.296,"97":0.578,"98":0.638,"99":0.586,"100":0.638,"101":0.577,"102":0.436,"103":0.638,"104":0.616,"105":0.266,"106":0.268,"107":0.564,"108":0.266,"109":0.854,"110":0.616,"111":0.612,"112":0.638,"113":0.638,"114":0.396,"115":0.524,"116":0.456,"117":0.616,"118":0.548,"119":0.784,"120":0.592,"121":0.616,"122":0.518,"123":0.466,"124":0.258,"125":0.466,"126":0.62,"8217":0.294,"8216":0.294,"8220":0.514,"8221":0.514,"8211":0.584,"8212":0.888,"183":0.218,"8230":0.798,"224":0.578,"232":0.577,"233":0.577,"236":0.266,"242":0.612,"249":0.616}},"corpo":{"predefinita":0.604,"larghezze":{"32":0.2666,"33":0.3042,"34":0.4941,"35":0.6387,"36":0.646,"37":0.9932,"38":0.6533,"39":0.313,"40":0.3687,"41":0.3687,"42":0.5205,"43":0.6675,"44":0.3032,"45":0.4624,"46":0.3032,"47":0.3696,"48":0.6455,"49":0.415,"50":0.6162,"51":0.627,"52":0.6562,"53":0.603,"54":0.6299,"55":0.5713,"56":0.6294,"57":0.6299,"58":0.3032,"59":0.3154,"60":0.6675,"61":0.6675,"62":0.6675,"63":0.5273,"64":0.9824,"65":0.709,"66":0.6567,"67":0.7334,"68":0.7217,"69":0.603,"70":0.5894,"71":0.7476,"72":0.7446,"73":0.2725,"74":0.5752,"75":0.6875,"76":0.5654,"77":0.9126,"78":0.7563,"79":0.7666,"80":0.6416,"81":0.7686,"82":0.6479,"83":0.646,"84":0.6528,"85":0.7402,"86":0.709,"87":1.0029,"88":0.7007,"89":0.6963,"90":0.6406,"91":0.3687,"92":0.3696,"93":0.3687,"94":0.4766,"95":0.4629,"96":0.3369,"97":0.5679,"98":0.6182,"99":0.5771,"100":0.6182,"101":0.5874,"102":0.3794,"103":0.6196,"104":0.6016,"105":0.252,"106":0.252,"107":0.5591,"108":0.252,"109":0.8882,"110":0.6016,"111":0.604,"112":0.6182,"113":0.6182,"114":0.3867,"115":0.5386,"116":0.3403,"117":0.6016,"118":0.5747,"119":0.8291,"120":0.5571,"121":0.5752,"122":0.5591,"123":0.4404,"124":0.3457,"125":0.4404,"126":0.6675,"8217":0.2773,"8216":0.2773,"8220":0.4736,"8221":0.4707,"8211":0.5,"8212":1.0,"183":0.3032,"8230":0.9102,"224":0.5679,"232":0.5874,"233":0.5874,"236":0.252,"242":0.604,"249":0.6016}}} as {
+/* Le larghezze vere dei caratteri nei due font, in frazioni di em: sono anche
+   l'elenco di cosa i font sanno disegnare, e per questo servono due volte —
+   a misurare dove tagliare, e a decidere cosa non si puo' scrivere. */
+const LARGHEZZE = {"display":{"predefinita":0.612,"larghezze":{"32":0.254,"33":0.298,"34":0.514,"35":0.636,"36":0.606,"37":0.758,"38":0.591,"39":0.294,"40":0.398,"41":0.39,"42":0.54,"43":0.62,"44":0.294,"45":0.432,"46":0.298,"47":0.388,"48":0.648,"49":0.452,"50":0.594,"51":0.608,"52":0.636,"53":0.6,"54":0.618,"55":0.554,"56":0.6,"57":0.618,"58":0.298,"59":0.298,"60":0.62,"61":0.62,"62":0.62,"63":0.578,"64":1.014,"65":0.634,"66":0.664,"67":0.644,"68":0.666,"69":0.554,"70":0.534,"71":0.662,"72":0.656,"73":0.264,"74":0.61,"75":0.626,"76":0.542,"77":0.882,"78":0.67,"79":0.676,"80":0.604,"81":0.676,"82":0.632,"83":0.606,"84":0.588,"85":0.672,"86":0.618,"87":0.898,"88":0.644,"89":0.624,"90":0.576,"91":0.358,"92":0.388,"93":0.358,"94":0.62,"95":0.62,"96":0.296,"97":0.578,"98":0.638,"99":0.586,"100":0.638,"101":0.577,"102":0.436,"103":0.638,"104":0.616,"105":0.266,"106":0.268,"107":0.564,"108":0.266,"109":0.854,"110":0.616,"111":0.612,"112":0.638,"113":0.638,"114":0.396,"115":0.524,"116":0.456,"117":0.616,"118":0.548,"119":0.784,"120":0.592,"121":0.616,"122":0.518,"123":0.466,"124":0.258,"125":0.466,"126":0.62,"160":0.254,"161":0.298,"162":0.598,"163":0.638,"164":0.62,"165":0.62,"166":0.258,"167":0.474,"168":0.448,"169":0.72,"170":0.419,"171":0.72,"172":0.62,"173":0.432,"174":0.516,"175":0.408,"176":0.394,"177":0.62,"178":0.364,"179":0.363,"180":0.296,"181":0.624,"182":0.614,"183":0.218,"184":0.328,"185":0.262,"186":0.436,"187":0.72,"188":0.83,"189":0.824,"190":0.891,"191":0.578,"192":0.634,"193":0.634,"194":0.634,"195":0.634,"196":0.634,"197":0.634,"198":0.821,"199":0.644,"200":0.554,"201":0.554,"202":0.554,"203":0.554,"204":0.264,"205":0.264,"206":0.264,"207":0.264,"208":0.666,"209":0.67,"210":0.676,"211":0.676,"212":0.676,"213":0.676,"214":0.676,"215":0.62,"216":0.676,"217":0.672,"218":0.672,"219":0.672,"220":0.672,"221":0.624,"222":0.604,"223":0.651,"224":0.578,"225":0.578,"226":0.578,"227":0.578,"228":0.578,"229":0.578,"230":0.874,"231":0.586,"232":0.577,"233":0.577,"234":0.577,"235":0.577,"236":0.266,"237":0.266,"238":0.266,"239":0.266,"240":0.616,"241":0.616,"242":0.612,"243":0.612,"244":0.612,"245":0.612,"246":0.612,"247":0.62,"248":0.612,"249":0.616,"250":0.616,"251":0.616,"252":0.616,"253":0.616,"254":0.638,"255":0.616,"305":0.266,"338":0.836,"339":0.984,"699":0.294,"700":0.294,"710":0.464,"730":0.288,"732":0.436,"768":0.0,"769":0.0,"771":0.0,"772":0.0,"776":0.0,"777":0.0,"803":0.0,"8201":0.184,"8203":0.0,"8211":0.584,"8212":0.888,"8216":0.294,"8217":0.294,"8218":0.294,"8220":0.514,"8221":0.514,"8222":0.514,"8226":0.4,"8230":0.798,"8242":0.232,"8243":0.416,"8249":0.48,"8250":0.48,"8260":0.638,"8364":0.678,"8482":0.552,"8593":0.62,"8595":0.62,"8722":0.62,"8725":0.409}},"corpo":{"predefinita":0.604,"larghezze":{"32":0.2666,"33":0.3042,"34":0.4941,"35":0.6387,"36":0.646,"37":0.9932,"38":0.6533,"39":0.313,"40":0.3687,"41":0.3687,"42":0.5205,"43":0.6675,"44":0.3032,"45":0.4624,"46":0.3032,"47":0.3696,"48":0.6455,"49":0.415,"50":0.6162,"51":0.627,"52":0.6562,"53":0.603,"54":0.6299,"55":0.5713,"56":0.6294,"57":0.6299,"58":0.3032,"59":0.3154,"60":0.6675,"61":0.6675,"62":0.6675,"63":0.5273,"64":0.9824,"65":0.709,"66":0.6567,"67":0.7334,"68":0.7217,"69":0.603,"70":0.5894,"71":0.7476,"72":0.7446,"73":0.2725,"74":0.5752,"75":0.6875,"76":0.5654,"77":0.9126,"78":0.7563,"79":0.7666,"80":0.6416,"81":0.7686,"82":0.6479,"83":0.646,"84":0.6528,"85":0.7402,"86":0.709,"87":1.0029,"88":0.7007,"89":0.6963,"90":0.6406,"91":0.3687,"92":0.3696,"93":0.3687,"94":0.4766,"95":0.4629,"96":0.3369,"97":0.5679,"98":0.6182,"99":0.5771,"100":0.6182,"101":0.5874,"102":0.3794,"103":0.6196,"104":0.6016,"105":0.252,"106":0.252,"107":0.5591,"108":0.252,"109":0.8882,"110":0.6016,"111":0.604,"112":0.6182,"113":0.6182,"114":0.3867,"115":0.5386,"116":0.3403,"117":0.6016,"118":0.5747,"119":0.8291,"120":0.5571,"121":0.5752,"122":0.5591,"123":0.4404,"124":0.3457,"125":0.4404,"126":0.6675,"160":0.2666,"161":0.3042,"162":0.5771,"163":0.6201,"164":0.7368,"165":0.5566,"166":0.293,"167":0.5684,"168":0.6016,"169":0.9141,"170":0.457,"171":0.6084,"172":0.6675,"174":0.6646,"175":0.4648,"176":0.457,"177":0.6675,"178":0.4478,"179":0.4546,"180":0.3369,"181":0.6001,"182":0.6011,"183":0.3032,"184":0.3003,"185":0.314,"186":0.4849,"187":0.6084,"188":0.8169,"189":0.8584,"190":0.8945,"191":0.5273,"192":0.709,"193":0.709,"194":0.709,"195":0.709,"196":0.709,"197":0.709,"198":1.0034,"199":0.7334,"200":0.603,"201":0.603,"202":0.603,"203":0.603,"204":0.2725,"205":0.2725,"206":0.2725,"207":0.2725,"208":0.7432,"209":0.7563,"210":0.7666,"211":0.7666,"212":0.7666,"213":0.7666,"214":0.7666,"215":0.6675,"216":0.7666,"217":0.7402,"218":0.7402,"219":0.7402,"220":0.7402,"221":0.6963,"222":0.647,"223":0.6299,"224":0.5679,"225":0.5679,"226":0.5679,"227":0.5679,"228":0.5679,"229":0.5679,"230":0.915,"231":0.5771,"232":0.5874,"233":0.5874,"234":0.5874,"235":0.5874,"236":0.252,"237":0.252,"238":0.252,"239":0.252,"240":0.5879,"241":0.6016,"242":0.604,"243":0.604,"244":0.604,"245":0.604,"246":0.604,"247":0.6675,"248":0.604,"249":0.6016,"250":0.6016,"251":0.6016,"252":0.6016,"253":0.5752,"254":0.6182,"255":0.5752,"305":0.252,"338":1.0093,"339":0.9956,"699":0.2764,"700":0.2773,"710":0.4287,"730":0.3203,"732":0.5039,"768":0.0,"769":0.0,"771":0.0,"772":0.0,"776":0.0,"777":0.0,"803":0.2568,"8194":0.5,"8201":0.1733,"8203":0.0,"8211":0.5,"8212":1.0,"8216":0.2773,"8217":0.2773,"8218":0.2568,"8220":0.4736,"8221":0.4707,"8222":0.4507,"8226":0.5332,"8230":0.9102,"8242":0.2397,"8243":0.4775,"8249":0.3999,"8250":0.3999,"8260":0.1982,"8364":0.6724,"8482":0.6206,"8593":0.8579,"8595":0.8579,"8722":0.6675}}} as {
   display: { predefinita: number; larghezze: Record<string, number> };
   corpo: { predefinita: number; larghezze: Record<string, number> };
 };
-
-const RADICE = "https://muslywave.com";
-
-/*
-  Il rasterizzatore, i font e il logo si caricano **una volta per macchina**,
-  non una volta per richiesta: la promessa vive nel modulo, e chi arriva dopo
-  aspetta la stessa. Sono due megabyte e mezzo di WebAssembly; presi a ogni
-  anteprima sarebbero una fesseria.
-*/
-let preparazione: Promise<{ display: Uint8Array; corpo: Uint8Array; logo: string }> | null = null;
-
-function inBase64(dati: ArrayBuffer): string {
-  const byte = new Uint8Array(dati);
-  let stringa = "";
-  /* A pezzi da 8k: `String.fromCharCode(...tutto)` su un'immagine intera
-     sfonda la pila degli argomenti. */
-  for (let i = 0; i < byte.length; i += 8192) {
-    stringa += String.fromCharCode(...byte.subarray(i, i + 8192));
-  }
-  return btoa(stringa);
-}
-
-async function scarica(indirizzo: string, millisecondi = 4000): Promise<ArrayBuffer> {
-  const risposta = await fetch(indirizzo, { signal: AbortSignal.timeout(millisecondi) });
-  if (!risposta.ok) throw new Error(`${indirizzo} ha risposto ${risposta.status}`);
-  return await risposta.arrayBuffer();
-}
-
-function prepara() {
-  if (!preparazione) {
-    preparazione = (async () => {
-      const [wasm, display, corpo, logo] = await Promise.all([
-        scarica(`${RADICE}/risorse/resvg.wasm`, 8000),
-        scarica(`${RADICE}/risorse/MWDisplay.ttf`),
-        scarica(`${RADICE}/risorse/MWBody.ttf`),
-        scarica(`${RADICE}/risorse/logo-cartolina.png`),
-      ]);
-      await initWasm(wasm);
-      return {
-        display: new Uint8Array(display),
-        corpo: new Uint8Array(corpo),
-        logo: `data:image/png;base64,${inBase64(logo)}`,
-      };
-    })().catch((errore) => {
-      /* Se e' andata male, la prossima richiesta riprova invece di ereditare
-         una promessa gia' rotta per sempre. */
-      preparazione = null;
-      throw errore;
-    });
-  }
-  return preparazione;
-}
 
 const LARGHEZZA = 1200;
 const ALTEZZA = 630;
@@ -136,6 +86,38 @@ function temaPer(id) {
   let somma = 0;
   for (let i = 0; i < id.length; i += 1) somma = (somma * 31 + id.charCodeAt(i)) >>> 0;
   return TEMI[somma % TEMI.length];
+}
+
+/**
+ * Riporta un testo a lettere che i font sanno disegnare.
+ *
+ * Nasce da un titolo vero, trovato in una playlist di prova:
+ * "Darbuna Darbun ( 𝕊𝕝𝕠𝕨𝕖𝕕 + ℝ𝕖𝕧𝕖𝕣𝕓 )". Quelle non sono lettere normali in
+ * grassetto: sono i "simboli matematici alfanumerici", caratteri diversi con
+ * un posto diverso nella tavola di Unicode. Un font che non li ha non li
+ * inventa: al loro posto stampa il rettangolo vuoto, e nella cartolina si
+ * vedeva una fila di scatolette.
+ *
+ * `NFKC` li riporta alle lettere che imitano — 𝕊 torna S — e cosi' il titolo
+ * si legge invece di sparire. Quello che resta fuori dal font anche dopo
+ * (un'emoji, un alfabeto che non e' il nostro) si toglie: uno spazio dice meno
+ * di una parola, ma un rettangolo vuoto dice il falso, cioe' che l'app e'
+ * rotta.
+ *
+ * Se togliendo non resta niente — un titolo tutto in arabo, per dire — si
+ * rimette com'era: meglio qualcosa che non si legge di una riga bianca con
+ * accanto il suo numero.
+ */
+function ripulisci(testo, tabella) {
+  const grezzo = String(testo ?? "").trim();
+  if (!grezzo) return "";
+  let tenuto = "";
+  for (const carattere of grezzo.normalize("NFKC")) {
+    if (tabella.larghezze[carattere.codePointAt(0)] !== undefined) tenuto += carattere;
+    else if (/\s/.test(carattere)) tenuto += " ";
+  }
+  const pulito = tenuto.replace(/\s+/g, " ").trim();
+  return pulito || grezzo;
 }
 
 /** Le lettere che dentro un file XML non possono restare se stesse. */
@@ -206,7 +188,7 @@ function aCapo(testo, tabella, misura, disponibile, righe) {
 
   /* Se e' rimasto fuori qualcosa, l'ultima riga lo dice con i puntini. */
   const scritte = fatte.join(" ");
-  if (scritte.length < String(testo).trim().length) {
+  if (scritte.length < parole.join(" ").length) {
     fatte[fatte.length - 1] = accorcia(
       `${fatte[fatte.length - 1]}…`,
       tabella,
@@ -238,13 +220,16 @@ function costruisciCartolina({
   const display = larghezze.display;
   const corpo = larghezze.corpo;
 
+  const titoloPulito = ripulisci(nome, display);
+  const autorePulito = ripulisci(autore, corpo);
+
   /*
     Il titolo si adatta: grande se e' corto, piu' piccolo se e' lungo. Cosi'
     "Gym Nasheeds" riempie il riquadro e un nome di dieci parole ci sta lo
     stesso, invece di uscire dal bordo o restare minuscolo per prudenza.
   */
-  const misuraTitolo = String(nome).length > 26 ? 52 : 64;
-  const righeTitolo = aCapo(nome, display, misuraTitolo, COLONNA.larghezza, 2);
+  const misuraTitolo = titoloPulito.length > 26 ? 52 : 64;
+  const righeTitolo = aCapo(titoloPulito, display, misuraTitolo, COLONNA.larghezza, 2);
   const daMostrare = brani.slice(0, 4);
   const restanti = quanti - daMostrare.length;
 
@@ -277,7 +262,7 @@ function costruisciCartolina({
   y += righeTitolo.length * (misuraTitolo * 1.12);
 
   const sotto = accorcia(
-    `${autore} · ${quanti} ${quanti === 1 ? "track" : "tracks"}`,
+    `${autorePulito} · ${quanti} ${quanti === 1 ? "track" : "tracks"}`,
     corpo,
     27,
     COLONNA.larghezza,
@@ -298,7 +283,7 @@ function costruisciCartolina({
     const numeroLargo = 42;
     daMostrare.forEach((brano, indice) => {
       const base = y + 54 + indice * PASSO + 30;
-      const titolo = accorcia(brano.titolo, corpo, 25, COLONNA.larghezza - numeroLargo - 8);
+      const titolo = accorcia(ripulisci(brano.titolo, corpo), corpo, 25, COLONNA.larghezza - numeroLargo - 8);
       elenco +=
         `<text x="${COLONNA.x}" y="${base}" font-family="MW Body" font-size="23" fill="#ffffff" opacity="0.35">${indice + 1}</text>` +
         `<text x="${COLONNA.x + numeroLargo}" y="${base}" font-family="MW Body" font-size="25" fill="#ffffff" opacity="0.88">${pulisci(titolo)}</text>`;
