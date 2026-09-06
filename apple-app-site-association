@@ -11,6 +11,10 @@
             "comment": "A shared playlist opens in MuslyWave."
           },
           {
+            "/": "/brano/*",
+            "comment": "A shared track opens in MuslyWave."
+          },
+          {
             "/": "/invite/*",
             "comment": "A creator invite opens in MuslyWave."
           },

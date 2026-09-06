@@ -39,6 +39,14 @@
 function = "anteprima-del-link"
 path = "/playlist/*"
 
+# E lo stesso per un brano singolo. Due righe e non una perche' `netlify.toml`
+# vuole un percorso per riga; la funzione e' la stessa e dentro si guarda il
+# primo pezzo dell'indirizzo — per una playlist disegna una cartolina, per un
+# brano mette la copertina e basta, come fa Spotify.
+[[edge_functions]]
+function = "anteprima-del-link"
+path = "/brano/*"
+
 # La cartolina: il PNG 1200x630 con copertina, nome, primi brani e logo, che
 # `anteprima-del-link` mette in `og:image`. E' un indirizzo suo, e non una
 # pagina, perche' chi lo chiede non e' una persona ma il motore di anteprima di
@@ -66,3 +74,15 @@ path = "/cartolina/*"
   for = "/risorse/*"
   [headers.values]
     Cache-Control = "public, max-age=604800, immutable"
+
+# La favicon: e' il logo che si vede accanto a "muslywave.com" dentro
+# l'anteprima di un link, ed e' l'unico posto in cui compare a quella misura.
+[[headers]]
+  for = "/favicon.png"
+  [headers.values]
+    Cache-Control = "public, max-age=604800"
+
+[[headers]]
+  for = "/favicon.ico"
+  [headers.values]
+    Cache-Control = "public, max-age=604800"

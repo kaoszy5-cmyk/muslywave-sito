@@ -4,5 +4,6 @@
 # which is what open.html reads to know what to open, and what iOS needs to see
 # to match it against the app's associated domains.
 /playlist/*  /open.html  200
+/brano/*     /open.html  200
 /invite/*    /open.html  200
 /amico/*    /open.html  200
