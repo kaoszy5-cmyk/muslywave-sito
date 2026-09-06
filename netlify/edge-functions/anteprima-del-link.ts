@@ -147,8 +147,18 @@ export default async function anteprimaDelLink(richiesta: Request, contesto: Con
       .map((brano) => String(brano?.title ?? "").trim())
       .filter(Boolean)
       .join(" · ");
+    /*
+      "Playlist by ..." solo quando c'e' davvero un qualcuno.
+
+      Le playlist del catalogo hanno `type = 'admin'`: le pubblica chi
+      amministra l'app, e il suo nome non c'entra niente con loro. Chiesto
+      cosi': *"quello sono io che li ho pubblicati e non devo uscire da nessuna
+      parte"*. Il nome esce solo dalle playlist delle persone — dove e' meta'
+      del motivo per cui si apre il link.
+    */
+    const dellApp = String(playlist.type ?? "") === "admin";
     const descrizione = [
-      `Playlist by ${autore}`,
+      dellApp ? "" : `Playlist by ${autore}`,
       quante ? `${quante} ${quante === 1 ? "track" : "tracks"}` : "",
       primi,
     ]

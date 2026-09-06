@@ -49,10 +49,9 @@ import { initWasm, Resvg } from "https://esm.sh/@resvg/resvg-wasm@2.6.2";
 /* Le larghezze vere dei caratteri nei due font, in frazioni di em: sono anche
    l'elenco di cosa i font sanno disegnare, e per questo servono due volte — a
    misurare dove tagliare, e a decidere cosa non si puo' nemmeno scrivere. */
-const LARGHEZZE = {"display":{"predefinita":0.612,"larghezze":{"32":0.254,"33":0.298,"34":0.514,"35":0.636,"36":0.606,"37":0.758,"38":0.591,"39":0.294,"40":0.398,"41":0.39,"42":0.54,"43":0.62,"44":0.294,"45":0.432,"46":0.298,"47":0.388,"48":0.648,"49":0.452,"50":0.594,"51":0.608,"52":0.636,"53":0.6,"54":0.618,"55":0.554,"56":0.6,"57":0.618,"58":0.298,"59":0.298,"60":0.62,"61":0.62,"62":0.62,"63":0.578,"64":1.014,"65":0.634,"66":0.664,"67":0.644,"68":0.666,"69":0.554,"70":0.534,"71":0.662,"72":0.656,"73":0.264,"74":0.61,"75":0.626,"76":0.542,"77":0.882,"78":0.67,"79":0.676,"80":0.604,"81":0.676,"82":0.632,"83":0.606,"84":0.588,"85":0.672,"86":0.618,"87":0.898,"88":0.644,"89":0.624,"90":0.576,"91":0.358,"92":0.388,"93":0.358,"94":0.62,"95":0.62,"96":0.296,"97":0.578,"98":0.638,"99":0.586,"100":0.638,"101":0.577,"102":0.436,"103":0.638,"104":0.616,"105":0.266,"106":0.268,"107":0.564,"108":0.266,"109":0.854,"110":0.616,"111":0.612,"112":0.638,"113":0.638,"114":0.396,"115":0.524,"116":0.456,"117":0.616,"118":0.548,"119":0.784,"120":0.592,"121":0.616,"122":0.518,"123":0.466,"124":0.258,"125":0.466,"126":0.62,"160":0.254,"161":0.298,"162":0.598,"163":0.638,"164":0.62,"165":0.62,"166":0.258,"167":0.474,"168":0.448,"169":0.72,"170":0.419,"171":0.72,"172":0.62,"173":0.432,"174":0.516,"175":0.408,"176":0.394,"177":0.62,"178":0.364,"179":0.363,"180":0.296,"181":0.624,"182":0.614,"183":0.218,"184":0.328,"185":0.262,"186":0.436,"187":0.72,"188":0.83,"189":0.824,"190":0.891,"191":0.578,"192":0.634,"193":0.634,"194":0.634,"195":0.634,"196":0.634,"197":0.634,"198":0.821,"199":0.644,"200":0.554,"201":0.554,"202":0.554,"203":0.554,"204":0.264,"205":0.264,"206":0.264,"207":0.264,"208":0.666,"209":0.67,"210":0.676,"211":0.676,"212":0.676,"213":0.676,"214":0.676,"215":0.62,"216":0.676,"217":0.672,"218":0.672,"219":0.672,"220":0.672,"221":0.624,"222":0.604,"223":0.651,"224":0.578,"225":0.578,"226":0.578,"227":0.578,"228":0.578,"229":0.578,"230":0.874,"231":0.586,"232":0.577,"233":0.577,"234":0.577,"235":0.577,"236":0.266,"237":0.266,"238":0.266,"239":0.266,"240":0.616,"241":0.616,"242":0.612,"243":0.612,"244":0.612,"245":0.612,"246":0.612,"247":0.62,"248":0.612,"249":0.616,"250":0.616,"251":0.616,"252":0.616,"253":0.616,"254":0.638,"255":0.616,"305":0.266,"338":0.836,"339":0.984,"699":0.294,"700":0.294,"710":0.464,"730":0.288,"732":0.436,"768":0.0,"769":0.0,"771":0.0,"772":0.0,"776":0.0,"777":0.0,"803":0.0,"8201":0.184,"8203":0.0,"8211":0.584,"8212":0.888,"8216":0.294,"8217":0.294,"8218":0.294,"8220":0.514,"8221":0.514,"8222":0.514,"8226":0.4,"8230":0.798,"8242":0.232,"8243":0.416,"8249":0.48,"8250":0.48,"8260":0.638,"8364":0.678,"8482":0.552,"8593":0.62,"8595":0.62,"8722":0.62,"8725":0.409}},"corpo":{"predefinita":0.604,"larghezze":{"32":0.2666,"33":0.3042,"34":0.4941,"35":0.6387,"36":0.646,"37":0.9932,"38":0.6533,"39":0.313,"40":0.3687,"41":0.3687,"42":0.5205,"43":0.6675,"44":0.3032,"45":0.4624,"46":0.3032,"47":0.3696,"48":0.6455,"49":0.415,"50":0.6162,"51":0.627,"52":0.6562,"53":0.603,"54":0.6299,"55":0.5713,"56":0.6294,"57":0.6299,"58":0.3032,"59":0.3154,"60":0.6675,"61":0.6675,"62":0.6675,"63":0.5273,"64":0.9824,"65":0.709,"66":0.6567,"67":0.7334,"68":0.7217,"69":0.603,"70":0.5894,"71":0.7476,"72":0.7446,"73":0.2725,"74":0.5752,"75":0.6875,"76":0.5654,"77":0.9126,"78":0.7563,"79":0.7666,"80":0.6416,"81":0.7686,"82":0.6479,"83":0.646,"84":0.6528,"85":0.7402,"86":0.709,"87":1.0029,"88":0.7007,"89":0.6963,"90":0.6406,"91":0.3687,"92":0.3696,"93":0.3687,"94":0.4766,"95":0.4629,"96":0.3369,"97":0.5679,"98":0.6182,"99":0.5771,"100":0.6182,"101":0.5874,"102":0.3794,"103":0.6196,"104":0.6016,"105":0.252,"106":0.252,"107":0.5591,"108":0.252,"109":0.8882,"110":0.6016,"111":0.604,"112":0.6182,"113":0.6182,"114":0.3867,"115":0.5386,"116":0.3403,"117":0.6016,"118":0.5747,"119":0.8291,"120":0.5571,"121":0.5752,"122":0.5591,"123":0.4404,"124":0.3457,"125":0.4404,"126":0.6675,"160":0.2666,"161":0.3042,"162":0.5771,"163":0.6201,"164":0.7368,"165":0.5566,"166":0.293,"167":0.5684,"168":0.6016,"169":0.9141,"170":0.457,"171":0.6084,"172":0.6675,"174":0.6646,"175":0.4648,"176":0.457,"177":0.6675,"178":0.4478,"179":0.4546,"180":0.3369,"181":0.6001,"182":0.6011,"183":0.3032,"184":0.3003,"185":0.314,"186":0.4849,"187":0.6084,"188":0.8169,"189":0.8584,"190":0.8945,"191":0.5273,"192":0.709,"193":0.709,"194":0.709,"195":0.709,"196":0.709,"197":0.709,"198":1.0034,"199":0.7334,"200":0.603,"201":0.603,"202":0.603,"203":0.603,"204":0.2725,"205":0.2725,"206":0.2725,"207":0.2725,"208":0.7432,"209":0.7563,"210":0.7666,"211":0.7666,"212":0.7666,"213":0.7666,"214":0.7666,"215":0.6675,"216":0.7666,"217":0.7402,"218":0.7402,"219":0.7402,"220":0.7402,"221":0.6963,"222":0.647,"223":0.6299,"224":0.5679,"225":0.5679,"226":0.5679,"227":0.5679,"228":0.5679,"229":0.5679,"230":0.915,"231":0.5771,"232":0.5874,"233":0.5874,"234":0.5874,"235":0.5874,"236":0.252,"237":0.252,"238":0.252,"239":0.252,"240":0.5879,"241":0.6016,"242":0.604,"243":0.604,"244":0.604,"245":0.604,"246":0.604,"247":0.6675,"248":0.604,"249":0.6016,"250":0.6016,"251":0.6016,"252":0.6016,"253":0.5752,"254":0.6182,"255":0.5752,"305":0.252,"338":1.0093,"339":0.9956,"699":0.2764,"700":0.2773,"710":0.4287,"730":0.3203,"732":0.5039,"768":0.0,"769":0.0,"771":0.0,"772":0.0,"776":0.0,"777":0.0,"803":0.2568,"8194":0.5,"8201":0.1733,"8203":0.0,"8211":0.5,"8212":1.0,"8216":0.2773,"8217":0.2773,"8218":0.2568,"8220":0.4736,"8221":0.4707,"8222":0.4507,"8226":0.5332,"8230":0.9102,"8242":0.2397,"8243":0.4775,"8249":0.3999,"8250":0.3999,"8260":0.1982,"8364":0.6724,"8482":0.6206,"8593":0.8579,"8595":0.8579,"8722":0.6675}}} as {
+const LARGHEZZE = {"display":{"predefinita":0.6191,"larghezze":{"32":0.2188,"33":0.3584,"34":0.5864,"35":0.6553,"36":0.6602,"37":1.0293,"38":0.6831,"39":0.3545,"40":0.3823,"41":0.3823,"42":0.5825,"43":0.6855,"44":0.3525,"45":0.4712,"46":0.3525,"47":0.3999,"48":0.6919,"49":0.4414,"50":0.6377,"51":0.6567,"52":0.6885,"53":0.6338,"54":0.6616,"55":0.5879,"56":0.6641,"57":0.6616,"58":0.3525,"59":0.3599,"60":0.6855,"61":0.6855,"62":0.6855,"63":0.5791,"64":1.0361,"65":0.7695,"66":0.6646,"67":0.7437,"68":0.7227,"69":0.6099,"70":0.5854,"71":0.7524,"72":0.7485,"73":0.2856,"74":0.5898,"75":0.7383,"76":0.5654,"77":0.9434,"78":0.7656,"79":0.7729,"80":0.6519,"81":0.7817,"82":0.6621,"83":0.6602,"84":0.6768,"85":0.7271,"86":0.7695,"87":1.0586,"88":0.7612,"89":0.752,"90":0.6787,"91":0.3823,"92":0.3999,"93":0.3823,"94":0.4932,"95":0.4844,"96":0.3823,"97":0.5884,"98":0.6377,"99":0.5952,"100":0.6377,"101":0.6006,"102":0.4097,"103":0.6392,"104":0.6353,"105":0.2832,"106":0.2832,"107":0.5928,"108":0.2832,"109":0.9272,"110":0.6353,"111":0.6191,"112":0.6377,"113":0.6377,"114":0.4199,"115":0.5732,"116":0.3818,"117":0.6353,"118":0.6152,"119":0.8628,"120":0.5942,"121":0.6182,"122":0.5811,"123":0.4863,"124":0.3877,"125":0.4863,"126":0.6855,"160":0.2188,"161":0.3584,"162":0.5952,"163":0.6499,"164":0.7764,"165":0.5786,"166":0.3667,"167":0.5684,"168":0.6353,"169":0.9141,"170":0.4678,"171":0.6914,"172":0.6855,"174":0.6606,"175":0.4233,"176":0.4609,"177":0.6855,"178":0.4673,"179":0.4824,"180":0.3823,"181":0.6455,"182":0.5972,"183":0.3525,"184":0.4033,"185":0.3452,"186":0.4927,"187":0.6914,"188":0.8633,"189":0.895,"190":0.9351,"191":0.5791,"192":0.7695,"193":0.7695,"194":0.7695,"195":0.7695,"196":0.7695,"197":0.7695,"198":1.0347,"199":0.7437,"200":0.6099,"201":0.6099,"202":0.6099,"203":0.6099,"204":0.2856,"205":0.2856,"206":0.2856,"207":0.2856,"208":0.77,"209":0.7656,"210":0.7729,"211":0.7729,"212":0.7729,"213":0.7729,"214":0.7729,"215":0.6855,"216":0.7729,"217":0.7271,"218":0.7271,"219":0.7271,"220":0.7271,"221":0.752,"222":0.6826,"223":0.6743,"224":0.5884,"225":0.5884,"226":0.5884,"227":0.5884,"228":0.5884,"229":0.5884,"230":0.9072,"231":0.5952,"232":0.6006,"233":0.6006,"234":0.6006,"235":0.6006,"236":0.2832,"237":0.2832,"238":0.2832,"239":0.2832,"240":0.606,"241":0.6353,"242":0.6191,"243":0.6191,"244":0.6191,"245":0.6191,"246":0.6191,"247":0.6855,"248":0.6191,"249":0.6353,"250":0.6353,"251":0.6353,"252":0.6353,"253":0.6182,"254":0.6377,"255":0.6182,"305":0.2832,"338":1.0229,"339":0.9834,"699":0.3042,"700":0.3311,"710":0.479,"730":0.3921,"732":0.501,"768":0.0,"769":0.0,"771":0.0,"772":0.0,"776":0.0,"777":0.0,"803":0.3066,"8194":0.5,"8201":0.1475,"8203":0.0,"8211":0.5,"8212":1.0,"8216":0.3311,"8217":0.3311,"8218":0.3076,"8220":0.5806,"8221":0.5693,"8222":0.5459,"8226":0.438,"8230":1.0581,"8242":0.2954,"8243":0.5898,"8249":0.4502,"8250":0.4502,"8260":0.2183,"8364":0.6919,"8482":0.6519,"8593":0.9341,"8595":0.9341,"8722":0.6855}},"corpo":{"predefinita":0.604,"larghezze":{"32":0.2666,"33":0.3042,"34":0.4941,"35":0.6387,"36":0.646,"37":0.9932,"38":0.6533,"39":0.313,"40":0.3687,"41":0.3687,"42":0.5205,"43":0.6675,"44":0.3032,"45":0.4624,"46":0.3032,"47":0.3696,"48":0.6455,"49":0.415,"50":0.6162,"51":0.627,"52":0.6562,"53":0.603,"54":0.6299,"55":0.5713,"56":0.6294,"57":0.6299,"58":0.3032,"59":0.3154,"60":0.6675,"61":0.6675,"62":0.6675,"63":0.5273,"64":0.9824,"65":0.709,"66":0.6567,"67":0.7334,"68":0.7217,"69":0.603,"70":0.5894,"71":0.7476,"72":0.7446,"73":0.2725,"74":0.5752,"75":0.6875,"76":0.5654,"77":0.9126,"78":0.7563,"79":0.7666,"80":0.6416,"81":0.7686,"82":0.6479,"83":0.646,"84":0.6528,"85":0.7402,"86":0.709,"87":1.0029,"88":0.7007,"89":0.6963,"90":0.6406,"91":0.3687,"92":0.3696,"93":0.3687,"94":0.4766,"95":0.4629,"96":0.3369,"97":0.5679,"98":0.6182,"99":0.5771,"100":0.6182,"101":0.5874,"102":0.3794,"103":0.6196,"104":0.6016,"105":0.252,"106":0.252,"107":0.5591,"108":0.252,"109":0.8882,"110":0.6016,"111":0.604,"112":0.6182,"113":0.6182,"114":0.3867,"115":0.5386,"116":0.3403,"117":0.6016,"118":0.5747,"119":0.8291,"120":0.5571,"121":0.5752,"122":0.5591,"123":0.4404,"124":0.3457,"125":0.4404,"126":0.6675,"160":0.2666,"161":0.3042,"162":0.5771,"163":0.6201,"164":0.7368,"165":0.5566,"166":0.293,"167":0.5684,"168":0.6016,"169":0.9141,"170":0.457,"171":0.6084,"172":0.6675,"174":0.6646,"175":0.4648,"176":0.457,"177":0.6675,"178":0.4478,"179":0.4546,"180":0.3369,"181":0.6001,"182":0.6011,"183":0.3032,"184":0.3003,"185":0.314,"186":0.4849,"187":0.6084,"188":0.8169,"189":0.8584,"190":0.8945,"191":0.5273,"192":0.709,"193":0.709,"194":0.709,"195":0.709,"196":0.709,"197":0.709,"198":1.0034,"199":0.7334,"200":0.603,"201":0.603,"202":0.603,"203":0.603,"204":0.2725,"205":0.2725,"206":0.2725,"207":0.2725,"208":0.7432,"209":0.7563,"210":0.7666,"211":0.7666,"212":0.7666,"213":0.7666,"214":0.7666,"215":0.6675,"216":0.7666,"217":0.7402,"218":0.7402,"219":0.7402,"220":0.7402,"221":0.6963,"222":0.647,"223":0.6299,"224":0.5679,"225":0.5679,"226":0.5679,"227":0.5679,"228":0.5679,"229":0.5679,"230":0.915,"231":0.5771,"232":0.5874,"233":0.5874,"234":0.5874,"235":0.5874,"236":0.252,"237":0.252,"238":0.252,"239":0.252,"240":0.5879,"241":0.6016,"242":0.604,"243":0.604,"244":0.604,"245":0.604,"246":0.604,"247":0.6675,"248":0.604,"249":0.6016,"250":0.6016,"251":0.6016,"252":0.6016,"253":0.5752,"254":0.6182,"255":0.5752,"305":0.252,"338":1.0093,"339":0.9956,"699":0.2764,"700":0.2773,"710":0.4287,"730":0.3203,"732":0.5039,"768":0.0,"769":0.0,"771":0.0,"772":0.0,"776":0.0,"777":0.0,"803":0.2568,"8194":0.5,"8201":0.1733,"8203":0.0,"8211":0.5,"8212":1.0,"8216":0.2773,"8217":0.2773,"8218":0.2568,"8220":0.4736,"8221":0.4707,"8222":0.4507,"8226":0.5332,"8230":0.9102,"8242":0.2397,"8243":0.4775,"8249":0.3999,"8250":0.3999,"8260":0.1982,"8364":0.6724,"8482":0.6206,"8593":0.8579,"8595":0.8579,"8722":0.6675}}} as {
   display: { predefinita: number; larghezze: Record<string, number> };
-  corpo: { predefinita: number; larghezze: Record<string, number> };
-};
+
 
 const RADICE = "https://muslywave.com";
 
@@ -172,6 +171,34 @@ function ripulisci(testo, tabella) {
   return pulito || grezzo;
 }
 
+/**
+ * Il sigillo della verifica: il tondo dentellato di Instagram e X, non un
+ * cerchio.
+
+ * Chiesto cosi': *"il verificato non farlo a cerchio ma la classica roba
+ * spigolosa di Instagram ecc"*. Ed e' la forma giusta per la ragione per cui
+ * esiste: un tondo liscio con dentro un segno somiglia a un tasto, a una
+ * notifica, a mille altre cose. Quella dentellata non somiglia a niente
+ * tranne che a se stessa — e' un sigillo, e si legge come un sigillo anche a
+ * venticinque punti in mezzo a un nome.
+ *
+ * Dodici punte, quelle di X: sei sarebbe una stella, venti tornerebbe un
+ * cerchio. Il raggio interno all'85% del suo perche' la dentellatura si veda
+ * senza che le punte diventino spine, e le punte si arrotondano con un filo
+ * dello stesso colore invece che con dei raccordi disegnati a mano.
+ */
+function sigillo(cx, cy, raggio) {
+  const punte = 12;
+  const dentro = raggio * 0.855;
+  const angoli = [];
+  for (let i = 0; i < punte * 2; i += 1) {
+    const r = i % 2 === 0 ? raggio : dentro;
+    const angolo = (Math.PI / punte) * i - Math.PI / 2;
+    angoli.push(`${(cx + Math.cos(angolo) * r).toFixed(2)} ${(cy + Math.sin(angolo) * r).toFixed(2)}`);
+  }
+  return `M${angoli.join(" L")} Z`;
+}
+
 /** Le lettere che dentro un file XML non possono restare se stesse. */
 function pulisci(testo) {
   return String(testo ?? "")
@@ -261,6 +288,8 @@ function aCapo(testo, tabella, misura, disponibile, righe) {
 function costruisciCartolina({
   nome,
   autore,
+  autoreFoto,
+  autoreVerificato,
   brani,
   quanti,
   copertina,
@@ -313,13 +342,95 @@ function costruisciCartolina({
     .join("");
   y += righeTitolo.length * (misuraTitolo * 1.12);
 
-  const sotto = accorcia(
-    `${autorePulito} · ${quanti} ${quanti === 1 ? "track" : "tracks"}`,
-    corpo,
-    27,
-    COLONNA.larghezza,
-  );
-  const rigaAutore = `<text x="${COLONNA.x}" y="${y + 26}" font-family="MW Body" font-size="27" fill="${tinta}">${pulisci(sotto)}</text>`;
+  /*
+    La riga di chi l'ha fatta: faccia, nome, spunta, e quante canzoni.
+
+    =========================================================================
+    Quando non c'e' nessun nome
+    =========================================================================
+
+    Chiesto cosi': *"i brani non hanno un creatore (adesso esce Founder), ma
+    non va bene: quello sono io che li ho pubblicati e non devo uscire da
+    nessuna parte. Devono uscire solo nelle playlist o brani pubblicati da
+    persone che non sono admin"*.
+
+    Ed e' una distinzione vera, non una preferenza. Una playlist del catalogo e'
+    dell'app: dire "di Founder" non aggiunge un'informazione, mette il nome di
+    una persona su una cosa che quella persona non ha fatto — ha solo premuto
+    "pubblica". Una playlist di qualcuno invece **e'** di qualcuno, e li' il nome
+    e' meta' del motivo per cui la si apre.
+
+    Quindi qui non si sceglie fra due nomi: si sceglie fra una riga che ha un
+    autore e una che non ce l'ha. Senza autore resta il conto dei brani, che e'
+    l'unica cosa vera che quella riga aveva da dire.
+  */
+  const MISURA_SOTTO = 27;
+  const conto = `${quanti} ${quanti === 1 ? "track" : "tracks"}`;
+  const LATO_FACCIA = 32;
+  const SPUNTA = 25;
+
+  let rigaAutore = "";
+  const baseSotto = y + 26;
+
+  if (autorePulito) {
+    /*
+      Si misura, poi si mette. La faccia e la spunta sono figure e non lettere:
+      il testo non le scavalca da solo, e ogni pezzo deve sapere dove finisce
+      quello prima. Con il nome tagliato al punto giusto, la riga sta dentro la
+      colonna anche con un nome lungo il doppio della cartolina.
+    */
+    const conFaccia = Boolean(autoreFoto);
+    const inizioNome = COLONNA.x + (conFaccia ? LATO_FACCIA + 12 : 0);
+    /*
+      Lo stacco prima del conto dei brani.
+
+      Serve un numero e non uno spazio scritto nel testo: dentro un SVG lo
+      spazio in testa a una riga viene mangiato, ed e' il motivo per cui il
+      punto risultava appiccicato alla spunta — *"il · 19 tracks leggermente
+      piu' staccato dal verificato"*.
+    */
+    const STACCO = 14;
+    const dopoIlNome =
+      (autoreVerificato ? SPUNTA + 7 : 0) + STACCO + larghezza(`· ${conto}`, corpo, MISURA_SOTTO);
+    const spazioNome = COLONNA.larghezza - (inizioNome - COLONNA.x) - dopoIlNome;
+    const nomeCorto = accorcia(autorePulito, corpo, MISURA_SOTTO, Math.max(60, spazioNome));
+    const fineNome = inizioNome + larghezza(nomeCorto, corpo, MISURA_SOTTO);
+
+    if (conFaccia) {
+      rigaAutore +=
+        `<clipPath id="tondoFaccia"><circle cx="${COLONNA.x + LATO_FACCIA / 2}" cy="${baseSotto - 9}" r="${LATO_FACCIA / 2}"/></clipPath>` +
+        `<image x="${COLONNA.x}" y="${baseSotto - 9 - LATO_FACCIA / 2}" width="${LATO_FACCIA}" height="${LATO_FACCIA}" href="${autoreFoto}" preserveAspectRatio="xMidYMid slice" clip-path="url(#tondoFaccia)"/>` +
+        `<circle cx="${COLONNA.x + LATO_FACCIA / 2}" cy="${baseSotto - 9}" r="${LATO_FACCIA / 2}" fill="none" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1.5"/>`;
+    }
+
+    rigaAutore += `<text x="${inizioNome}" y="${baseSotto}" font-family="MW Body" font-size="${MISURA_SOTTO}" fill="#ffffff">${pulisci(nomeCorto)}</text>`;
+
+    if (autoreVerificato) {
+      /*
+        La spunta e' disegnata e non scritta: un carattere qualunque non ce
+        l'ha, e i due che ce l'hanno la disegnano ognuno a modo suo.
+
+        Blu con il segno bianco, chiesto cosi'. Ed e' anche l'unico colore che
+        qui puo' stare fermo: tutto il resto della cartolina cambia tinta con la
+        playlist, ma una spunta che cambia colore non si legge piu' come "questo
+        e' verificato" — si legge come decorazione. Il blu della verifica e' un
+        segno che la gente conosce gia' da altrove, e vale proprio perche' e'
+        sempre lo stesso.
+      */
+      const BLU = "#1d9bf0";
+      const cx = fineNome + 7 + SPUNTA / 2;
+      const cy = baseSotto - 9;
+      const r = SPUNTA / 2;
+      rigaAutore +=
+        `<path d="${sigillo(cx, cy, r)}" fill="${BLU}" stroke="${BLU}" stroke-width="${r * 0.16}" stroke-linejoin="round"/>` +
+        `<path d="M${cx - r * 0.44} ${cy + r * 0.03} l${r * 0.32} ${r * 0.34} l${r * 0.6} -${r * 0.62}" fill="none" stroke="#ffffff" stroke-width="${r * 0.34}" stroke-linecap="round" stroke-linejoin="round"/>`;
+    }
+
+    const dopo = fineNome + (autoreVerificato ? SPUNTA + 7 : 0) + STACCO;
+    rigaAutore += `<text x="${dopo}" y="${baseSotto}" font-family="MW Body" font-size="${MISURA_SOTTO}" fill="${tinta}">· ${pulisci(conto)}</text>`;
+  } else {
+    rigaAutore = `<text x="${COLONNA.x}" y="${baseSotto}" font-family="MW Body" font-size="${MISURA_SOTTO}" fill="${tinta}">${pulisci(conto)}</text>`;
+  }
   y += 46;
 
   /*
@@ -367,7 +478,6 @@ function costruisciCartolina({
 
   <rect width="${LARGHEZZA}" height="${ALTEZZA}" fill="#08040B"/>
   <rect width="${LARGHEZZA}" height="${ALTEZZA}" fill="url(#alone)"/>
-  <rect x="0" y="0" width="${LARGHEZZA}" height="5" fill="${tinta}"/>
 
   <rect x="${COPERTINA.x + 6}" y="${COPERTINA.y + 12}" width="${COPERTINA.lato}" height="${COPERTINA.lato}" rx="${COPERTINA.raggio}" fill="#000000" opacity="0.5"/>
   <image x="${COPERTINA.x}" y="${COPERTINA.y}" width="${COPERTINA.lato}" height="${COPERTINA.lato}" href="${copertina}" preserveAspectRatio="xMidYMid slice" clip-path="url(#tondoCopertina)"/>
@@ -424,7 +534,58 @@ export default async function cartolinaDellaPlaylist(richiesta: Request, contest
       copertinaVera = playlist.cover_url;
     }
 
+    /*
+      ======================================================================
+      Chi l'ha fatta — e quando invece non lo dice nessuno
+      ======================================================================
+
+      Chiesto cosi': *"i brani non hanno un creatore (adesso esce Founder), ma
+      non va bene: quello sono io che li ho pubblicati e non devo uscire da
+      nessuna parte. Devono uscire solo nelle playlist pubblicate da persone
+      che non sono admin"*.
+
+      La distinzione ce l'ha gia' il database: `playlist.type` vale `admin` per
+      le playlist del catalogo e qualcos'altro per quelle delle persone. Non si
+      guarda il nome — "Founder" oggi, un altro domani — si guarda **cosa e'**
+      quella playlist. Una del catalogo e' dell'app: metterci sopra il nome di
+      chi ha premuto "pubblica" non aggiunge niente e attribuisce a una persona
+      una cosa che non ha fatto.
+    */
+    const dellApp = String(playlist.type ?? "") === "admin";
+    const autore = dellApp ? "" : String(playlist.creator_name ?? "");
+    /*
+      `creator_verified` arriva dalla funzione del database solo dopo la
+      migrazione che la aggiunge; finche' non c'e', `creator_is_official` dice
+      gia' la stessa cosa per quasi tutti. Cosi' la cartolina funziona prima e
+      dopo, senza un giorno in cui e' rotta.
+    */
+    const verificato =
+      !dellApp &&
+      Boolean(playlist.creator_verified ?? playlist.creator_is_official);
+
     const { display, corpo, logo } = await prepara();
+
+    /*
+      La faccia di chi l'ha fatta, se ce n'e' una. Come la copertina va messa
+      dentro il disegno: chi trasforma un SVG in PNG non va in rete.
+
+      Un secondo e mezzo di attesa e non tre: e' un tondo da trentadue punti, e
+      non vale la pena far aspettare l'anteprima intera per la faccia. Se non
+      arriva, restano nome e spunta.
+    */
+    let autoreFoto: string | null = null;
+    const indirizzoFoto = playlist.creator_avatar_url;
+    if (autore && typeof indirizzoFoto === "string" && indirizzoFoto.startsWith("http")) {
+      try {
+        const faccia = await scarica(indirizzoFoto, 1500);
+        if (faccia.byteLength <= 3_000_000) {
+          const tipo = indirizzoFoto.match(/\.png(\?|$)/i) ? "png" : "jpeg";
+          autoreFoto = `data:image/${tipo};base64,${inBase64(faccia)}`;
+        }
+      } catch {
+        /* Nessuna faccia: la riga resta nome e spunta. */
+      }
+    }
 
     /*
       La copertina va messa dentro il disegno come `data:`: chi trasforma un
@@ -445,7 +606,9 @@ export default async function cartolinaDellaPlaylist(richiesta: Request, contest
 
     const svg = costruisciCartolina({
       nome: String(playlist.playlist_name ?? "Playlist"),
-      autore: String(playlist.creator_name ?? "MuslyWave"),
+      autore,
+      autoreFoto,
+      autoreVerificato: verificato,
       quanti: elenco.length,
       brani: elenco.map((brano) => ({ titolo: String(brano?.title ?? "").trim() })).filter((b) => b.titolo),
       copertina,
