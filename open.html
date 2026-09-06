@@ -62,7 +62,7 @@
 <meta name="twitter:image" content="https://muslywave.com/anteprima-sito.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet">
 <script>
   // Safari's smart banner is read while the head is parsed, so this has to run
   // here rather than after the page has rendered. It is a second way into the
@@ -93,7 +93,11 @@
   }
   *{margin:0;padding:0;box-sizing:border-box}
   body{
-    font-family:"Sora",-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,sans-serif;
+    /* Inter, come l'app. Sora era qui e se n'e' andata per lo stesso motivo
+       per cui se n'e' andata Space Grotesk dall'app: e' una delle facce che
+       compaiono in ogni grafica fatta a macchina, e il sito e l'app devono
+       essere la stessa cosa anche quando si aprono a un minuto di distanza. */
+    font-family:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,sans-serif;
     background:var(--bg);color:var(--text);line-height:1.6;
     -webkit-font-smoothing:antialiased;
     min-height:100vh;display:flex;align-items:center;justify-content:center;padding:28px;
