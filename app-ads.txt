@@ -23,10 +23,29 @@
 ownerdomain=muslywave.com
 contact=muslywavesupport@gmail.com
 
-# Il nostro account AdMob. Resta da quando la pubblicità passava di lì: oggi
-# l'app usa solo Unity, quindi questa riga non serve a niente, ma toglierla
-# chiuderebbe la porta a un ritorno ad AdMob senza guadagnare nulla.
-google.com, pub-2892986786366249, DIRECT, f08c47fec0942fa0
+# Il nostro account AdMob, ed è la riga che per mesi è stata sbagliata.
+#
+# Il difetto, letto nel pannello AdMob → App → app-ads.txt: "100% di query: il
+# file app-ads.txt viene pubblicato, ma nessun account venditore viene
+# autorizzato", e su tutte e due le app "ID publisher mancante. Aggiorna
+# subito: i tuoi utili pubblicitari sono a rischio".
+#
+# Il file c'era e si leggeva. Quello che non c'era era **noi**: qui sotto
+# stava scritto `pub-2892986786366249`, che non è l'account di questa app. Il
+# nostro è `pub-4866928640057547`, e lo dicono due posti che non possono
+# sbagliarsi: AdMob → Pagamenti ("AdSense pub-4866928640057547") e
+# l'identificativo dell'app dentro `Info.plist`,
+# `ca-app-pub-4866928640057547~8511644867`.
+#
+# Un identificativo sbagliato è peggio di una riga mancante: il file risulta
+# pubblicato e valido, quindi nessuno segnala che manca qualcosa — semplicemente
+# chi compra non trova mai il nostro venditore, e l'offerta per i nostri spazi
+# non parte. Da fuori si vede solo che gli annunci rendono zero.
+#
+# La riga vecchia non è stata tenuta accanto alla nuova: app-ads.txt è un
+# elenco di **autorizzazioni a vendere**, e lasciarci dentro un publisher di cui
+# non si sa niente è esattamente la cosa che questo file esiste per impedire.
+google.com, pub-4866928640057547, DIRECT, f08c47fec0942fa0
 
 # Unity Ads, e i partner che Unity autorizza a rivendere. La riga DIRECT è
 # quella che conta: dice che Unity vende questi spazi per conto nostro.
