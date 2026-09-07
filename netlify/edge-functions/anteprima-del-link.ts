@@ -69,6 +69,31 @@ function togliIVecchi(html: string): string {
   );
 }
 
+/**
+ * Il numero da alzare quando il disegno della cartolina cambia.
+ *
+ * ===========================================================================
+ * Perche' serve, e perche' non basta ripubblicare
+ * ===========================================================================
+ *
+ * Una cartolina resta un giorno nella cache di Netlify e per sempre in quella
+ * di WhatsApp: e' un'immagine, e le immagini si tengono. Va benissimo finche' il
+ * disegno non cambia — e quando cambia diventa il difetto segnalato cosi':
+ * *"sto provando adesso in tempo reale e i colori sono uguali"*.
+ *
+ * Non erano uguali: erano **vecchi**. Il codice nuovo girava gia', ma nessuno
+ * glielo chiedeva, perche' l'indirizzo era lo stesso di prima e la risposta di
+ * prima era ancora buona.
+ *
+ * Cambiare l'indirizzo e' l'unico modo per farlo chiedere di nuovo: `?v=3` e'
+ * una cartolina diversa da `?v=2` per ogni cache del mondo, e non c'e' niente
+ * da svuotare a mano da nessuna parte.
+ *
+ * Quindi: **si tocca il disegno, si alza questo numero.** E' l'unico passo che
+ * non fa il compilatore.
+ */
+const VERSIONE_CARTOLINA = "3";
+
 type Brano = { title?: string | null };
 
 /** Le tre cose che un motore di anteprima sa mostrare, gia' pronte. */
@@ -148,7 +173,7 @@ async function anteprimaDiUnaPlaylist(
     ]
       .filter(Boolean)
       .join(" · "),
-    immagine: `https://muslywave.com/cartolina/${encodeURIComponent(id)}.png`,
+    immagine: `https://muslywave.com/cartolina/${encodeURIComponent(id)}.png?v=${VERSIONE_CARTOLINA}`,
   };
 }
 

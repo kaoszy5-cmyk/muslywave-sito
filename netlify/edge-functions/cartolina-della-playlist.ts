@@ -659,7 +659,23 @@ export default async function cartolinaDellaPlaylist(richiesta: Request, contest
       brani: elenco.map((brano) => ({ titolo: String(brano?.title ?? "").trim() })).filter((b) => b.titolo),
       copertina,
       logo,
-      tema: tinteDi(playlist.category),
+      /*
+        Il colore: dalla categoria solo se la playlist e' del catalogo.
+
+        Prima lo prendeva sempre dalla categoria, anche per le playlist delle
+        persone. Corretto cosi': *"ti avevo detto per il creator di fare i
+        colori di MuslyWave"*.
+
+        E la regola giusta e' questa, non la categoria: una playlist del
+        catalogo **e'** la sua categoria — e' l'app che l'ha messa li' dentro, e
+        il colore dice di cosa si tratta. Una playlist di una persona la
+        categoria se l'e' scelta lei fra dieci voci, e non la rappresenta:
+        rappresenta un dito che ha toccato un elenco. Dare a quella il colore
+        della categoria vorrebbe dire far sembrare ufficiale una cosa che non lo
+        e'. I colori di MuslyWave dicono l'unica cosa vera che hanno in comune:
+        che sono di qualcuno, dentro quest'app.
+      */
+      tema: tinteDi(dellApp ? playlist.category : null),
       larghezze: LARGHEZZE,
     });
 
